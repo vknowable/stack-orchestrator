@@ -5,9 +5,11 @@ Instructions for deploying a local single node Gaia "fixturenet" for development
 ## 1. Build Laconic Stack Orchestrator
 Build this fork of Laconic Stack Orchestrator which includes the fixturenet-gaia stack:
 ```
+$ apt install python3-pip
+$ pip install shiv
 $ scripts/build_shiv_package.sh
 $ cd package
-$ mv laconic-so-{version} /usr/local/bin/laconic-so  # Or move laconic-so to ~/bin or your favorite on-path directory
+$ mv laconic-so-{version} /root/bin/laconic-so  # Or move laconic-so to ~/bin or your favorite on-path directory
 ```
 
 ## 2. Clone required repositories
