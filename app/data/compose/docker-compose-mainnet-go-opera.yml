@@ -5,12 +5,25 @@ services:
     restart: unless-stopped
     image: cerc/go-opera:local
     entrypoint: ["sh", "/docker-entrypoint-scripts.d/start-node.sh"]
+    env_file:
+      - ../config/mainnet-go-opera/go-opera.env
+    environment:
+      - IS_VALIDATOR="${IS_VALIDATOR:-false}"
+      - GENESIS_FILE="${GENESIS_FILE:-/dev/null}"
     volumes:
       - ../config/mainnet-go-opera/start-node.sh:/docker-entrypoint-scripts.d/start-node.sh
+      - $GENESIS_FILE:/host_genesis.g
+      - opera_data:/root/.opera/chaindata
+      - opera_keystore:/root/.opera/keystore
     # TODO: ports taken from dockerfile, determine which are needed
     ports:
       - "5050:5050" # p2p port, needed
+      - "5050:5050/udp"
       - "18545:18545" # http rpc port
       - "18546:18546" # websockets rpc port
       #- "18547" # unknown
       #- "19090" # unknown
+
+volumes:
+  opera_data:
+  opera_keystore:
