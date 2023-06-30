@@ -10,6 +10,6 @@ source ${CERC_CONTAINER_BASE_DIR}/build-base.sh
 
 # git -C ${CERC_REPO_BASE_DIR}/namada checkout ${NAMADA_TAG}
 
-# SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 docker build -t cerc/namada:local -f ${SCRIPT_DIR}/Dockerfile ${build_command_args} ${CERC_REPO_BASE_DIR}/namada
