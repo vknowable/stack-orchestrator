@@ -15,8 +15,6 @@ services:
     ports:
       - "${P2P_PORT:-26656}:26656" # p2p
       - "${RPC_PORT:-26657}:26657" # http rpc
-    extra_hosts:
-    - "host.docker.internal:172.18.0.1"
 
 volumes:
   namada_data:
