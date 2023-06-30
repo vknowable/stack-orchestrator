@@ -18,3 +18,6 @@ services:
 
 volumes:
   namada_data:
+
+extra_hosts:
+    - "host.docker.internal:host-gateway"
