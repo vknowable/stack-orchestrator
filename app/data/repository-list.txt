@@ -37,3 +37,4 @@ git.vdb.to/cerc-io/test-project
 github.com/Fantom-foundation/go-opera
 github.com/cerc-io/lasso
 github.com/paradigmxyz/reth
+github.com/anoma/namada
