@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  nethermind:
+    restart: unless-stopped
+    hostname: nethermind
+    image: cerc/nethermind:local
+    entrypoint: ["sh", "/docker-entrypoint-scripts.d/start-nethermind.sh"]
+    volumes:
+      - ../config/mainnet-gnosis/start-nethermind.sh:/docker-entrypoint-scripts.d/start-nethermind.sh
+      - nethermind_data:/root/.local/share/nethermind
+      - shared_data:/root/.shared_data
+    ports:
+      - "8545:8545" # http rpc
+      - "8546:8546" # ws rpc
+      - "30303:30303" # network listening port
+      - "30303:30303/udp"
+      - "8551" # consensus auth
+
+  lighthouse:
+    restart: unless-stopped
+    hostname: lighthouse
+    image: cerc/lighthouse:local
+    entrypoint: ["sh", "/docker-entrypoint-scripts.d/start-lighthouse.sh"]
+    volumes:
+      - ../config/mainnet-gnosis/start-lighthouse.sh:/docker-entrypoint-scripts.d/start-lighthouse.sh
+      - lighthouse_data:/root/.lighthouse/mainnet
+      - shared_data:/root/.shared_data
+    ports:
+      - "8001"
+
+volumes:
+  nethermind_data:
+  lighthouse_data:
+  shared_data:

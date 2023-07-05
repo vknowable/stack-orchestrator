@@ -1,0 +1,10 @@
+version: "1.1"
+name: mainnet-gnosis
+decription: "Gnosis node"
+repos:
+  - github.com/NethermindEth/nethermind
+containers:
+  - cerc/nethermind
+  - cerc/lighthouse
+pods:
+  - mainnet-gnosis
