@@ -1,11 +1,8 @@
 #!/bin/bash
 
-# TODO: move apt installs to container build
 # TODO: set chain-prefix by env var
 
 namada --version
-
-apt install -y procps # move to build
 
 # clean up the http server when the script exits
 cleanup() {
@@ -35,9 +32,6 @@ if [ $(hostname) = "namada-1" ]; then
   echo "Validator configs found. Generating chain configs..."
 
   # modify genesis template and add validator tomls to create genesis toml
-  apt install -y python3 # move to build
-  apt install -y python3-pip
-  pip install toml
   python3 make_genesis.py /root/.namada-shared/ genesis_template.toml >genesis.toml
 
   # create chain config tar

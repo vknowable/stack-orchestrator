@@ -41,7 +41,8 @@ FROM debian:bullseye-slim AS runtime
 #ENV NAMADA_BASE_DIR=/.namada 
 #ENV NAMADA_LOG_COLOR=false
 
-RUN apt-get update && apt-get install libcurl4-openssl-dev iproute2 curl -y && apt-get clean
+RUN apt-get update && apt-get install libcurl4-openssl-dev iproute2 curl procps python3 python3-pip -y && apt-get clean
+RUN pip install toml
 
 # COPY . .
 COPY --from=builder /app/wasm/*.wasm /wasm/
