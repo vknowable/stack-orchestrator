@@ -14,13 +14,22 @@ RUN apt-get update && apt-get install -y \
     git \
     libssl-dev \
     pkg-config \
+    libclang-dev \
     protobuf-compiler \
+    wget \
     && apt-get clean
 
 COPY --from=planner /app/recipe.json recipe.json
 
+RUN wget -P /root https://github.com/WebAssembly/binaryen/releases/download/version_114/binaryen-version_114-x86_64-linux.tar.gz
+RUN tar -xzf /root/binaryen-version_114-x86_64-linux.tar.gz -C /root
+# RUN PATH="/root/binaryen-version_114/bin:$PATH"
+RUN cp /root/binaryen-version_114/bin/* /usr/local/bin
+
 RUN cargo chef cook --release --recipe-path recipe.json
 COPY . .
+RUN cargo --version
+RUN make build-wasm-scripts
 RUN make build-release
 
 FROM golang:1.18.0 as tendermint-builder
@@ -32,7 +41,11 @@ FROM debian:bullseye-slim AS runtime
 #ENV NAMADA_BASE_DIR=/.namada 
 #ENV NAMADA_LOG_COLOR=false
 
-RUN apt-get update && apt-get install libcurl4-openssl-dev -y && apt-get clean
+RUN apt-get update && apt-get install libcurl4-openssl-dev iproute2 curl -y && apt-get clean
+
+# COPY . .
+COPY --from=builder /app/wasm/*.wasm /wasm/
+COPY --from=builder /app/wasm/checksums.json /wasm/
 
 COPY --from=builder /app/target/release/namada /usr/local/bin
 COPY --from=builder /app/target/release/namadan /usr/local/bin
