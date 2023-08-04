@@ -12,9 +12,21 @@ services:
     environment:
       - CHAIN_ID=$CHAIN_ID
       - EXTIP=$EXTIP
+      - RPC_LISTEN_ADDR=$RPC_LISTEN_ADDR
+      - RPC_CORS_ALLOWED=$RPC_CORS_ALLOWED
+      - INDEXER=$INDEXER
+      - PROMETHEUS_ENABLE=$PROMETHEUS_ENABLE
+      - PROMETHEUS_LISTEN_ADDR=$PROMETHEUS_LISTEN_ADDR
     ports:
       - "${P2P_PORT:-26656}:26656" # p2p
       - "${RPC_PORT:-26657}:26657" # http rpc
+      - "${PROM_PORT:-26660}:26660" # prometheus
 
 volumes:
+  # namada_data:
   namada_data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: "${NAMADA_DATA_DIR:-/home/.local/share/namada}"
