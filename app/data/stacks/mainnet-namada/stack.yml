@@ -1,0 +1,9 @@
+version: "1.1"
+name: mainnet-namada
+decription: "Namada public testnet node"
+repos:
+  - github.com/anoma/namada@v0.17.5
+containers:
+  - cerc/namada
+pods:
+  - mainnet-namada
