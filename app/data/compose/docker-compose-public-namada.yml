@@ -7,17 +7,17 @@ services:
     image: cerc/namada:local
     entrypoint: ["sh", "/docker-entrypoint-scripts.d/start-node.sh"]
     volumes:
-      - ../config/mainnet-namada/start-node.sh:/docker-entrypoint-scripts.d/start-node.sh
+      - ../config/public-namada/start-node.sh:/docker-entrypoint-scripts.d/start-node.sh
       - namada_data:/root/.local/share/namada
     environment:
       - CHAIN_ID=$CHAIN_ID
       - EXTIP=$EXTIP
-      - RPC_LISTEN_ADDR=$RPC_LISTEN_ADDR
+      - RPC_LISTEN=$RPC_LISTEN
       - RPC_CORS_ALLOWED=$RPC_CORS_ALLOWED
       - INDEXER=$INDEXER
       - PROM_ENABLE=$PROM_ENABLE
       - PROM_PORT=$PROM_PORT
-      - CONFIGS_SERVER=${CONFIGS_SERVER:-""}
+      - CONFIGS_SERVER=$CONFIGS_SERVER
     ports:
       - "${P2P_PORT:-26656}:26656" # p2p
       - "${RPC_PORT:-26657}:26657" # http rpc
@@ -30,4 +30,4 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: "${NAMADA_DATA_DIR:-/home/.local/share/namada}"
+      device: "${NAMADA_DATA_DIR:-$HOME/.local/share/namada}"
