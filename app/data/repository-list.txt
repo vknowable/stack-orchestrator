@@ -38,3 +38,5 @@ github.com/Fantom-foundation/go-opera
 github.com/cerc-io/lasso
 github.com/paradigmxyz/reth
 github.com/anoma/namada
+git.vdb.to/cerc-io/plugeth
+git.vdb.to/cerc-io/plugeth-statediff

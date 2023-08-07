@@ -14,32 +14,18 @@
 # along with this program.  If not, see <http:#www.gnu.org/licenses/>.
 
 import click
+from dataclasses import dataclass
+from importlib import util
 import os
 from pathlib import Path
 from shutil import copyfile, copytree
 import sys
-import ruamel.yaml
-from .util import get_stack_file_path, get_parsed_deployment_spec, get_parsed_stack_config, global_options
-
-
-def _get_yaml():
-    # See: https://stackoverflow.com/a/45701840/1701505
-    yaml = ruamel.yaml.YAML()
-    yaml.preserve_quotes = True
-    yaml.indent(sequence=3, offset=1)
-    return yaml
+from app.util import get_stack_file_path, get_parsed_deployment_spec, get_parsed_stack_config, global_options, get_yaml, get_compose_file_dir
+from app.deploy_types import DeploymentContext, DeployCommandContext
 
 
 def _make_default_deployment_dir():
     return "deployment-001"
-
-
-def _get_compose_file_dir():
-    # TODO: refactor to use common code with deploy command
-    # See: https://stackoverflow.com/questions/25389095/python-get-path-of-root-project-structure
-    data_dir = Path(__file__).absolute().parent.joinpath("data")
-    source_compose_dir = data_dir.joinpath("compose")
-    return source_compose_dir
 
 
 def _get_named_volumes(stack):
@@ -47,9 +33,9 @@ def _get_named_volumes(stack):
     named_volumes = []
     parsed_stack = get_parsed_stack_config(stack)
     pods = parsed_stack["pods"]
-    yaml = _get_yaml()
+    yaml = get_yaml()
     for pod in pods:
-        pod_file_path = os.path.join(_get_compose_file_dir(), f"docker-compose-{pod}.yml")
+        pod_file_path = os.path.join(get_compose_file_dir(), f"docker-compose-{pod}.yml")
         parsed_pod_file = yaml.load(open(pod_file_path, "r"))
         if "volumes" in parsed_pod_file:
             volumes = parsed_pod_file["volumes"]
@@ -96,21 +82,77 @@ def _fixup_pod_file(pod, spec, compose_dir):
                     pod["volumes"][volume] = new_volume_spec
 
 
+def call_stack_deploy_init(deploy_command_context):
+    # Link with the python file in the stack
+    # Call a function in it
+    # If no function found, return None
+    python_file_path = get_stack_file_path(deploy_command_context.stack).parent.joinpath("deploy", "commands.py")
+    spec = util.spec_from_file_location("commands", python_file_path)
+    imported_stack = util.module_from_spec(spec)
+    spec.loader.exec_module(imported_stack)
+    return imported_stack.init(deploy_command_context)
+
+
+# TODO: fold this with function above
+def call_stack_deploy_setup(deploy_command_context, extra_args):
+    # Link with the python file in the stack
+    # Call a function in it
+    # If no function found, return None
+    python_file_path = get_stack_file_path(deploy_command_context.stack).parent.joinpath("deploy", "commands.py")
+    spec = util.spec_from_file_location("commands", python_file_path)
+    imported_stack = util.module_from_spec(spec)
+    spec.loader.exec_module(imported_stack)
+    return imported_stack.setup(deploy_command_context, extra_args)
+
+
+# TODO: fold this with function above
+def call_stack_deploy_create(deployment_context):
+    # Link with the python file in the stack
+    # Call a function in it
+    # If no function found, return None
+    python_file_path = get_stack_file_path(deployment_context.command_context.stack).parent.joinpath("deploy", "commands.py")
+    spec = util.spec_from_file_location("commands", python_file_path)
+    imported_stack = util.module_from_spec(spec)
+    spec.loader.exec_module(imported_stack)
+    return imported_stack.create(deployment_context)
+
+
+# Inspect the pod yaml to find config files referenced in subdirectories
+# other than the one associated with the pod
+def _find_extra_config_dirs(parsed_pod_file, pod):
+    config_dirs = set()
+    services = parsed_pod_file["services"]
+    for service in services:
+        service_info = services[service]
+        if "volumes" in service_info:
+            for volume in service_info["volumes"]:
+                if ":" in volume:
+                    host_path = volume.split(":")[0]
+                    if host_path.startswith("../config"):
+                        config_dir = host_path.split("/")[2]
+                        if config_dir != pod:
+                            config_dirs.add(config_dir)
+    return config_dirs
+
+
 @click.command()
 @click.option("--output", required=True, help="Write yaml spec file here")
 @click.pass_context
 def init(ctx, output):
-    yaml = _get_yaml()
+    yaml = get_yaml()
     stack = global_options(ctx).stack
     verbose = global_options(ctx).verbose
+    default_spec_file_content = call_stack_deploy_init(ctx.obj)
     spec_file_content = {"stack": stack}
+    if default_spec_file_content:
+        spec_file_content.update(default_spec_file_content)
     if verbose:
         print(f"Creating spec file for stack: {stack}")
     named_volumes = _get_named_volumes(stack)
     if named_volumes:
         volume_descriptors = {}
         for named_volume in named_volumes:
-            volume_descriptors[named_volume] = f"../data/{named_volume}"
+            volume_descriptors[named_volume] = f"./data/{named_volume}"
         spec_file_content["volumes"] = volume_descriptors
     with open(output, "w") as output_file:
         yaml.dump(spec_file_content, output_file)
@@ -142,14 +184,42 @@ def create(ctx, spec_file, deployment_dir):
     destination_compose_dir = os.path.join(deployment_dir, "compose")
     os.mkdir(destination_compose_dir)
     data_dir = Path(__file__).absolute().parent.joinpath("data")
-    yaml = _get_yaml()
+    yaml = get_yaml()
     for pod in pods:
-        pod_file_path = os.path.join(_get_compose_file_dir(), f"docker-compose-{pod}.yml")
+        pod_file_path = os.path.join(get_compose_file_dir(), f"docker-compose-{pod}.yml")
         parsed_pod_file = yaml.load(open(pod_file_path, "r"))
+        extra_config_dirs = _find_extra_config_dirs(parsed_pod_file, pod)
+        if global_options(ctx).debug:
+            print(f"extra config dirs: {extra_config_dirs}")
         _fixup_pod_file(parsed_pod_file, parsed_spec, destination_compose_dir)
         with open(os.path.join(destination_compose_dir, os.path.basename(pod_file_path)), "w") as output_file:
             yaml.dump(parsed_pod_file, output_file)
         # Copy the config files for the pod, if any
-        source_config_dir = data_dir.joinpath("config", pod)
-        if os.path.exists(source_config_dir):
-            copytree(source_config_dir, os.path.join(deployment_dir, "config", pod))
+        config_dirs = {pod}
+        config_dirs = config_dirs.union(extra_config_dirs)
+        for config_dir in config_dirs:
+            source_config_dir = data_dir.joinpath("config", config_dir)
+            if os.path.exists(source_config_dir):
+                destination_config_dir = os.path.join(deployment_dir, "config", config_dir)
+                # If the same config dir appears in multiple pods, it may already have been copied
+                if not os.path.exists(destination_config_dir):
+                    copytree(source_config_dir, destination_config_dir)
+    # Delegate to the stack's Python code
+    # The deploy create command doesn't require a --stack argument so we need to insert the
+    # stack member here.
+    deployment_command_context = ctx.obj
+    deployment_command_context.stack = stack_name
+    deployment_context = DeploymentContext(Path(deployment_dir), deployment_command_context)
+    call_stack_deploy_create(deployment_context)
+
+
+@click.command()
+@click.option("--node-moniker", help="Help goes here")
+@click.option("--key-name", help="Help goes here")
+@click.option("--initialize-network", is_flag=True, default=False, help="Help goes here")
+@click.option("--join-network", is_flag=True, default=False, help="Help goes here")
+@click.option("--create-network", is_flag=True, default=False, help="Help goes here")
+@click.argument('extra_args', nargs=-1)
+@click.pass_context
+def setup(ctx, node_moniker, key_name, initialize_network, join_network, create_network, extra_args):
+    call_stack_deploy_setup(ctx.obj, extra_args)
