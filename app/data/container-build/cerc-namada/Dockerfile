@@ -70,8 +70,8 @@ FROM debian:bullseye-slim AS runtime
 RUN apt-get update && apt-get install libcurl4-openssl-dev curl jq iproute2 procps python3 python3-pip -y && apt-get clean
 RUN pip install toml
 
-COPY --from=builder /app/wasm/*.wasm /wasm/
-COPY --from=builder /app/wasm/checksums.json /wasm/
+COPY --from=builder /app/namada/wasm/*.wasm /app/namada/wasm/*.json /wasm/
+# COPY --from=builder /app/namada/wasm/checksums.json /wasm/
 
 COPY --from=builder /app/namada/target/release/namada /usr/local/bin
 COPY --from=builder /app/namada/target/release/namadan /usr/local/bin

@@ -16,7 +16,6 @@ services:
       - RPC_CORS_ALLOWED=$RPC_CORS_ALLOWED
       - INDEXER=$INDEXER
       - PROM_ENABLE=$PROM_ENABLE
-      - PROM_PORT=$PROM_PORT
       - CONFIGS_SERVER=$CONFIGS_SERVER
     ports:
       - "${P2P_PORT:-26656}:26656" # p2p
