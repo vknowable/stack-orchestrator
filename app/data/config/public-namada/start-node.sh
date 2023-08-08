@@ -32,9 +32,11 @@ else
 fi
 
 # set config options
-# External IP to advertise to peers; you may wish to set this explicitly if you're eg: behind a NAT
+# External IP to advertise to peers; you will likely wish to set this to your host machine's public IP
 EXTIP=${EXTIP:-''}
-sed -i "s#external_address = \".*\"#external_address = \"$EXTIP\"#g" /root/.local/share/namada/$CHAIN_ID/config.toml
+if [ -n "$EXTIP" ]; then
+  sed -i "s#external_address = \".*\"#external_address = \"$EXTIP:$P2P_PORT\"#g" /root/.local/share/namada/$CHAIN_ID/config.toml
+fi
 
 # Whether RPC should listen for outside requests, or just localhost
 if [ "$RPC_LISTEN" == "true" ]; then
@@ -48,6 +50,11 @@ sed -i "s#cors_allowed_origins = .*#cors_allowed_origins = $RPC_CORS_ALLOWED#g" 
 
 INDEXER=${INDEXER:-null}
 sed -i "s#indexer = \".*\"#indexer = \"$INDEXER\"#g" /root/.local/share/namada/$CHAIN_ID/config.toml
+
+PERSISTENT_PEERS=${PERSISTENT_PEERS:-''}
+if [ -n "$PERSISTENT_PEERS" ]; then
+  sed -i "s#persistent_peers = \".*\"#persistent_peers = \"$PERSISTENT_PEERS\"#g" /root/.local/share/namada/$CHAIN_ID/config.toml
+fi
 
 
 ########################################

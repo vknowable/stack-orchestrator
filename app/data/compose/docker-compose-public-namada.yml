@@ -17,6 +17,8 @@ services:
       - INDEXER=$INDEXER
       - PROM_ENABLE=$PROM_ENABLE
       - CONFIGS_SERVER=$CONFIGS_SERVER
+      - P2P_PORT=$P2P_PORT
+      - PERSISTENT_PEERS=$PERSISTENT_PEERS
     ports:
       - "${P2P_PORT:-26656}:26656" # p2p
       - "${RPC_PORT:-26657}:26657" # http rpc
