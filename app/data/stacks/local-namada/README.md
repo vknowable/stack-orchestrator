@@ -1,3 +1,6 @@
+# Todo:
+Update docs
+
 # Namada (local tesnet)
 
 Deploy a Namada local testnet with three validators.

@@ -9,46 +9,59 @@ cleanup() {
     pkill -f "/serve"
 }
 
-# generate validator keys
+
 export PUBLIC_IP=$(ip a | grep -oE 'inet ([0-9]{1,3}\.){3}[0-9]{1,3}/[0-9]{1,2} brd ([0-9]{1,3}\.){3}[0-9]{1,3}' | grep -v '127.0.0.1' | awk '{print $2}' | cut -d '/' -f1)
 export ALIAS=$(hostname)
-namada client utils init-genesis-validator --alias $ALIAS \
---max-commission-rate-change 0.01 --commission-rate 0.05 \
---net-address $PUBLIC_IP:26656 --unsafe-dont-encrypt
 
-# Pre-genesis toml is written to /root/.local/share/namada/pre-genesis/namada-x/validator.toml
-mkdir -p /root/.namada-shared/$ALIAS
-cp -a /root/.local/share/namada/pre-genesis/$ALIAS/validator.toml /root/.namada-shared/$ALIAS
+if [ ! -f "/root/.namada-shared/chain.config" ]; then
+  # generate validator keys
+  namada client utils init-genesis-validator --alias $ALIAS \
+  --max-commission-rate-change 0.01 --commission-rate 0.05 \
+  --net-address $PUBLIC_IP:26656 --unsafe-dont-encrypt
 
-### generating chain configs, done on host namada-1 only ###
+  # Pre-genesis toml is written to /root/.local/share/namada/pre-genesis/namada-x/validator.toml
+  mkdir -p /root/.namada-shared/$ALIAS
+  cp -a /root/.local/share/namada/pre-genesis/$ALIAS/validator.toml /root/.namada-shared/$ALIAS
+fi
+
+############  generating chain configs, done on host namada-1 only ############ 
 if [ $(hostname) = "namada-1" ]; then
 
-  # wait until all validator configs have been written
-  while [ ! -d "/root/.namada-shared/namada-1" ] || [ ! -d "/root/.namada-shared/namada-2" ] || [ ! -d "/root/.namada-shared/namada-3" ]; do 
-    echo "Validator configs not ready. Sleeping for 5s..."
-    sleep 5
-  done
+  if [ ! -f "/root/.namada-shared/chain.config" ]; then
+    # wait until all validator configs have been written
+    while [ ! -d "/root/.namada-shared/namada-1" ] || [ ! -d "/root/.namada-shared/namada-2" ] || [ ! -d "/root/.namada-shared/namada-3" ]; do 
+      echo "Validator configs not ready. Sleeping for 5s..."
+      sleep 5
+    done
 
-  echo "Validator configs found. Generating chain configs..."
+    echo "Validator configs found. Generating chain configs..."
 
-  # modify genesis template and add validator tomls to create genesis toml
-  python3 make_genesis.py /root/.namada-shared/ genesis_template.toml >genesis.toml
+    # modify genesis template and add validator tomls to create genesis toml
+    python3 make_genesis.py /root/.namada-shared/ genesis_template.toml >genesis.toml
 
-  # create chain config tar
-  namadac utils init-network --genesis-path /genesis.toml --wasm-checksums-path /wasm/checksums.json --chain-prefix knowable --unsafe-dont-encrypt
-
-  export CHAIN_ID=$(basename *.tar.gz .tar.gz)
+    # create chain config tar
+    # namadac utils init-network --genesis-path /genesis.toml --wasm-checksums-path /wasm/checksums.json --chain-prefix luminara --unsafe-dont-encrypt
+    # export CHAIN_ID=$(basename *.tar.gz .tar.gz)
+    INIT_OUTPUT=$(namadac utils init-network --genesis-path /genesis.toml --wasm-checksums-path /wasm/checksums.json --chain-prefix luminara --unsafe-dont-encrypt)
+    echo "$INIT_OUTPUT"
+    CHAIN_ID=$(echo "$INIT_OUTPUT" \
+      | grep 'Derived chain ID:' \
+      | awk '{print $4}')
+    echo "Chain id: $CHAIN_ID"
+  fi
 
   # serve config tar over http
+  echo "Serving configs..."
   mkdir -p /serve
   cp *.tar.gz /serve
   trap cleanup EXIT
   nohup bash -c "python3 -m http.server --directory /serve 8123 &"
 
-  # write config server info to shared volume
-  #echo -e "$PUBLIC_IP\n$CHAIN_ID" | tee /root/.namada-shared/chain.config
-  sleep 2
-  printf "%b\n%b" "$PUBLIC_IP" "$CHAIN_ID" | tee /root/.namada-shared/chain.config
+  if [ ! -f "/root/.namada-shared/chain.config" ]; then
+    # write config server info to shared volume
+    sleep 2
+    printf "%b\n%b" "$PUBLIC_IP" "$CHAIN_ID" | tee /root/.namada-shared/chain.config
+  fi
 
 ### end namada-1 specific prep ###
 
@@ -62,7 +75,10 @@ else
   echo "Configs server info found, proceeding with network setup"
 fi
 
-### all nodes resume here ###
+############ all nodes resume here ############
+
+# one last sleep to make sure configs server has been given time to start
+sleep 5
 
 # get chain config server info
 CONFIG_IP=$(awk 'NR==1' /root/.namada-shared/chain.config)
@@ -76,6 +92,13 @@ namada client utils join-network \
 # copy wasm to namada dir
 cp -a /wasm/*.wasm /root/.local/share/namada/$CHAIN_ID/wasm
 cp -a /wasm/checksums.json /root/.local/share/namada/$CHAIN_ID/wasm
+
+# configure namada-1 node to advertise host public ip to outside peers if provided
+EXTIP=${EXTIP:-''}
+if [ -n "$EXTIP" ]; then
+echo "Advertising public ip $EXTIP"
+  sed -i "s#external_address = \".*\"#external_address = \"$EXTIP:${P2P_PORT:-26656}\"#g" /root/.local/share/namada/$CHAIN_ID/config.toml
+fi
 
 # start node
 NAMADA_LOG=info CMT_LOG_LEVEL=p2p:none,pex:error NAMADA_CMT_STDOUT=true namada node ledger run

@@ -2,7 +2,7 @@
 genesis_time = "2021-12-20T15:00:00.00Z"
 native_token = "NAM"
 faucet_pow_difficulty = 0
-faucet_withdrawal_limit = "100000"
+faucet_withdrawal_limit = "1000"
 
 # 3 genesis validators.
 [validator.validator-1]
@@ -68,7 +68,7 @@ Christel = "1000000"
 "Christel.public_key" = "100"
 Daewon = "1000000"
 Ester = "1000000"
-faucet = "9223372036854"
+faucet = "922337203685400000000"
 "faucet.public_key" = "100"
 "validator-1.public_key" = "1000"
 "validator-2.public_key" = "1000"
@@ -170,6 +170,8 @@ vp = "vp_masp"
 
 # Wasm VP definitions
 
+# Wasm VP definitions
+
 # Implicit VP
 [wasm.vp_implicit]
 filename = "vp_implicit.wasm"
@@ -182,10 +184,6 @@ filename = "vp_user.wasm"
 [wasm.vp_validator]
 # filename (relative to wasm path used by the node)
 filename = "vp_validator.wasm"
-
-# Token VP
-[wasm.vp_token]
-filename = "vp_token.wasm"
 
 # Faucet VP
 [wasm.vp_testnet_faucet]

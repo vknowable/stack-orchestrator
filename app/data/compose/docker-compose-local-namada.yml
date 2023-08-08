@@ -10,13 +10,17 @@ services:
       - ../config/local-namada/start-node.sh:/docker-entrypoint-scripts.d/start-node.sh
       - namada-1_data:/root/.local/share/namada
       - namada-shared:/root/.namada-shared
-      - ../config/local-namada/genesis_template.toml:/genesis_template.toml
+      - ${GENSESIS_TEMPLATE:-../config/local-namada/genesis_template.toml}:/genesis_template.toml
+      # - ../config/local-namada/genesis_template.old:/genesis_template.toml
       - ../config/local-namada/make_genesis.py:/make_genesis.py
     environment:
-      - CHAIN_ID=$CHAIN_ID
+      # - CHAIN_ID=$CHAIN_ID
+      - P2P_PORT=${P2P_PORT}
+      - EXTIP=${EXTIP}
     ports:
-      - "26656" # p2p
+      - "${P2P_PORT}:26656" # p2p
       - "26657" # http rpc
+      - "${SERVE_PORT}:8123" # configs server
 
   namada-2:
     restart: unless-stopped
@@ -27,8 +31,8 @@ services:
       - ../config/local-namada/start-node.sh:/docker-entrypoint-scripts.d/start-node.sh
       - namada-2_data:/root/.local/share/namada
       - namada-shared:/root/.namada-shared
-    environment:
-      - CHAIN_ID=$CHAIN_ID
+    # environment:
+    #   - CHAIN_ID=$CHAIN_ID
     ports:
       - "26656" # p2p
       - "26657" # http rpc
@@ -42,8 +46,8 @@ services:
       - ../config/local-namada/start-node.sh:/docker-entrypoint-scripts.d/start-node.sh
       - namada-3_data:/root/.local/share/namada
       - namada-shared:/root/.namada-shared
-    environment:
-      - CHAIN_ID=$CHAIN_ID
+    # environment:
+    #   - CHAIN_ID=$CHAIN_ID
     ports:
       - "26656" # p2p
       - "26657" # http rpc

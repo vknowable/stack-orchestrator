@@ -2,7 +2,10 @@ FROM lukemathwalker/cargo-chef:latest-rust-1.70.0 AS chef
 WORKDIR /app
 
 FROM chef AS planner
-COPY . .
+# COPY . .
+ARG NAMADA_TAG=main
+RUN git clone -b ${NAMADA_TAG} --single-branch https://github.com/anoma/namada.git
+WORKDIR /app/namada
 RUN cargo chef prepare --recipe-path recipe.json
 
 FROM chef AS builder 
@@ -14,22 +17,45 @@ RUN apt-get update && apt-get install -y \
     git \
     libssl-dev \
     pkg-config \
-    libclang-dev \
     protobuf-compiler \
-    wget \
     && apt-get clean
 
-COPY --from=planner /app/recipe.json recipe.json
+COPY --from=planner /app/namada/recipe.json recipe.json
 
-RUN wget -P /root https://github.com/WebAssembly/binaryen/releases/download/version_114/binaryen-version_114-x86_64-linux.tar.gz
-RUN tar -xzf /root/binaryen-version_114-x86_64-linux.tar.gz -C /root
-# RUN PATH="/root/binaryen-version_114/bin:$PATH"
-RUN cp /root/binaryen-version_114/bin/* /usr/local/bin
+ARG SKIP_BUILD_WASM=false
+ENV SKIP_WASM=${SKIP_BUILD_WASM}
+RUN if [ "$SKIP_WASM" != "true" ]; then \
+    wget -P /root https://github.com/WebAssembly/binaryen/releases/download/version_114/binaryen-version_114-x86_64-linux.tar.gz && \
+    tar -xzf /root/binaryen-version_114-x86_64-linux.tar.gz -C /root && \
+    cp /root/binaryen-version_114/bin/* /usr/local/bin; \
+    fi
 
 RUN cargo chef cook --release --recipe-path recipe.json
-COPY . .
-RUN cargo --version
-RUN make build-wasm-scripts
+#COPY . .
+ARG NAMADA_TAG=main
+RUN git clone -b ${NAMADA_TAG} --single-branch https://github.com/anoma/namada.git
+
+WORKDIR /app/namada
+
+# build test wasms (not working)
+# 
+# ARG BUILD_TEST_WASM=false
+# ENV TEST_WASM=${BUILD_TEST_WASM}
+# RUN if [ "$TEST_WASM" = "true" ]; then \
+#     cd /app/namada/wasm_for_tests/wasm_source && \
+#     make deps && \
+#     make all && \
+#     cp /app/namada/wasm_for_tests/*.wasm /app/namada/wasm/ && \
+#     # modify makefile to not delete existing wasm files when running build-wasm-scripts
+#     sed -i 's/^[[:space:]]*rm wasm\/\*\.wasm || true/# &/' /app/namada/Makefile; \
+#     fi
+
+RUN if [ "$SKIP_WASM" != "true" ]; then \
+    rustup target add wasm32-unknown-unknown && \
+    make build-wasm-scripts; \
+    fi
+
+# RUN make build-wasm-scripts
 RUN make build-release
 
 FROM golang:1.18.0 as tendermint-builder
@@ -41,17 +67,16 @@ FROM debian:bullseye-slim AS runtime
 #ENV NAMADA_BASE_DIR=/.namada 
 #ENV NAMADA_LOG_COLOR=false
 
-RUN apt-get update && apt-get install libcurl4-openssl-dev iproute2 curl procps python3 python3-pip -y && apt-get clean
+RUN apt-get update && apt-get install libcurl4-openssl-dev curl jq iproute2 procps python3 python3-pip -y && apt-get clean
 RUN pip install toml
 
-# COPY . .
-COPY --from=builder /app/wasm/*.wasm /wasm/
-COPY --from=builder /app/wasm/checksums.json /wasm/
+COPY --from=builder /app/namada/wasm/*.wasm /app/namada/wasm/*.json /wasm/
+# COPY --from=builder /app/namada/wasm/checksums.json /wasm/
 
-COPY --from=builder /app/target/release/namada /usr/local/bin
-COPY --from=builder /app/target/release/namadan /usr/local/bin
-COPY --from=builder /app/target/release/namadaw /usr/local/bin
-COPY --from=builder /app/target/release/namadac /usr/local/bin
+COPY --from=builder /app/namada/target/release/namada /usr/local/bin
+COPY --from=builder /app/namada/target/release/namadan /usr/local/bin
+COPY --from=builder /app/namada/target/release/namadaw /usr/local/bin
+COPY --from=builder /app/namada/target/release/namadac /usr/local/bin
 COPY --from=tendermint-builder /app/cometbft/build/cometbft /usr/local/bin
 
 EXPOSE 26656
@@ -60,4 +85,4 @@ EXPOSE 26659
 EXPOSE 26657
 
 ENTRYPOINT ["/usr/local/bin/namada"]
-CMD ["--help"]
+CMD ["--version"]
