@@ -22,9 +22,9 @@ RUN apt-get update && apt-get install -y \
 
 COPY --from=planner /app/namada/recipe.json recipe.json
 
-ARG SKIP_BUILD_WASM=false
-ENV SKIP_WASM=${SKIP_BUILD_WASM}
-RUN if [ "$SKIP_WASM" != "true" ]; then \
+ARG BUILD_WASM=false
+ENV WASM=${BUILD_WASM}
+RUN if [ "$WASM" = "true" ]; then \
     wget -P /root https://github.com/WebAssembly/binaryen/releases/download/version_114/binaryen-version_114-x86_64-linux.tar.gz && \
     tar -xzf /root/binaryen-version_114-x86_64-linux.tar.gz -C /root && \
     cp /root/binaryen-version_114/bin/* /usr/local/bin; \
@@ -50,7 +50,7 @@ WORKDIR /app/namada
 #     sed -i 's/^[[:space:]]*rm wasm\/\*\.wasm || true/# &/' /app/namada/Makefile; \
 #     fi
 
-RUN if [ "$SKIP_WASM" != "true" ]; then \
+RUN if [ "$WASM" = "true" ]; then \
     rustup target add wasm32-unknown-unknown && \
     make build-wasm-scripts; \
     fi
