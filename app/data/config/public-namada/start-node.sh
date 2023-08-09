@@ -27,8 +27,8 @@ else
   export NAMADA_NETWORK_CONFIGS_SERVER="${CONFIGS_SERVER}"
   namada client utils join-network --chain-id $CHAIN_ID --dont-prefetch-wasm
   # copy wasm to namada dir
-  cp -a /app/namada/wasm/*.wasm /root/.local/share/namada/$CHAIN_ID/wasm
-  cp -a /app/namada/wasm/checksums.json /root/.local/share/namada/$CHAIN_ID/wasm
+  cp -a /wasm/*.wasm /root/.local/share/namada/$CHAIN_ID/wasm
+  cp -a /wasm/checksums.json /root/.local/share/namada/$CHAIN_ID/wasm
 fi
 
 # set config options
@@ -39,7 +39,8 @@ if [ -n "$EXTIP" ]; then
 fi
 
 # Whether RPC should listen for outside requests, or just localhost
-if [ "$RPC_LISTEN" == "true" ]; then
+RPC_LISTEN=${RPC_LISTEN:-false}
+if [ "$RPC_LISTEN" = "true" ]; then
   sed -i "s#laddr = \"tcp://.*:26657\"#laddr = \"tcp://0.0.0.0:26657\"#g" /root/.local/share/namada/$CHAIN_ID/config.toml
 else
   sed -i "s#laddr = \"tcp://.*:26657\"#laddr = \"tcp://127.0.0.1:26657\"#g" /root/.local/share/namada/$CHAIN_ID/config.toml
