@@ -4,25 +4,18 @@ Deploy a Namada local testnet with three validators.
 
 ### Quickstart
 ```
-$ laconic-so --stack local-namada setup-repositories
 $ laconic-so --stack local-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=<namada git tag> --build-arg BUILD_WASM=true"
 $ laconic-so --stack local-namada deploy up
 ```
 ---
 ### Detailed Instructions
-### 1. Clone required repositories
-```
-$ laconic-so --stack local-namada setup-repositories
-```
-Cloned repos can be found in $HOME/cerc
-
-### 2. Build containers
+### 1. Build containers
 Build the Namada binaries, wasm files, and CometBFT:
 ```
 $ laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=<namada git tag> --build-arg BUILD_WASM=true"
 ```
 
-### 3. Start the testnet
+### 2. Start the testnet
 ```
 $ laconic-so --stack local-namada deploy up
 ```
@@ -67,7 +60,7 @@ Consensus validators:
 Total bonded stake: 300000.000000
 ```
 
-### 4. Shut down
+### 3. Shut down
 ```
 $ laconic-so --stack local-namada deploy down --delete-volumes
 ```
