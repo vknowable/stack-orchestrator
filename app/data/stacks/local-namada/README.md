@@ -1,26 +1,42 @@
-# Todo:
-Update docs
-
 # Namada (local tesnet)
 
 Deploy a Namada local testnet with three validators.
 
-## Clone repositories
+### Quickstart
+```
+$ laconic-so --stack local-namada setup-repositories
+$ laconic-so --stack local-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=<namada git tag> --build-arg BUILD_WASM=true"
+$ laconic-so --stack local-namada deploy up
+```
+---
+### Detailed Instructions
+### 1. Clone required repositories
 ```
 $ laconic-so --stack local-namada setup-repositories
 ```
+Cloned repos can be found in $HOME/cerc
 
-## Build containers
+### 2. Build containers
+Build the Namada binaries, wasm files, and CometBFT:
 ```
-$ laconic-so --stack local-namada build-containers
+$ laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=<namada git tag> --build-arg BUILD_WASM=true"
 ```
 
-## Deploy stack
+### 3. Start the testnet
 ```
 $ laconic-so --stack local-namada deploy up
 ```
+You can configure some settings by passing a .env file (see [sample.env](https://github.com/vknowable/stack-orchestrator/blob/local-namada/app/data/config/local-namada/sample.env)):
+```
+$ laconic-so --stack local-namada deploy --env-file <file> up
+```
+List of (optional) env variables:
+- `EXTIP`: external IP address that the namada-1 node will advertise to peers. If you wish to allow outside nodes to connect, set this to your host machine's public IP.
+- `P2P_PORT`: set a P2P port on the host corresponding the namada-1 node, if you wish to allow outside nodes to connect.
+- `SERVE_PORT`: the namada-1 node will serve the generated chain configs over http to the other nodes; you can set a corresponding port on the host machine if you wish to allow outside nodes access
+- `GENESIS_TEMPLATE`: a path to a template genesis toml to use as a base when generating the chain configs. You can find an appropriate file for your Namada version from [this repo](https://github.com/heliaxdev/anoma-network-config/tree/master/templates).
 
-## Check logs
+#### Check logs
 ```
 $ laconic-so --stack local-namada deploy logs
 ```
@@ -33,11 +49,11 @@ laconic-d4b13d373d0a85a0a4d865588760241a-namada-3-1  | I[2023-07-11|05:28:30.225
 laconic-d4b13d373d0a85a0a4d865588760241a-namada-1-1  | I[2023-07-11|05:39:50.978] finalizing commit of block                   module=consensus height=13 hash=3D69F58E96B3E5A7CFCFF32BB2141ED295BB1EB6655C08F2D2E5F14DEDF19DC7 root=0CE7227BFAF574E736BF0FEC2133DABA9ACAC629C00AFF67688F34A6C64435B3 num_txs=0
 ```
 
-## Use the testnet
+#### Use the testnet
 Since the nodes are Docker containers, all the usual Docker commands still apply. For example, to get a shell in one of the nodes:
 ```
 $ docker ps
-# take note the node's container id
+# get the node's container id
 
 $ docker exec -it {container id} /bin/bash
 
@@ -51,7 +67,7 @@ Consensus validators:
 Total bonded stake: 300000.000000
 ```
 
-## Shut down
+### 4. Shut down
 ```
 $ laconic-so --stack local-namada deploy down --delete-volumes
 ```
