@@ -3,13 +3,15 @@
 Deploy a Namada full node to connect to an existing testnet.
 
 ### Quickstart
-Join the latest public testnet:
+After setting up Stack-Orchestrator and its requirements by following either the quick instructions [here](https://github.com/vknowable/stack-orchestrator/blob/namada/app/data/stacks/public-namada/quickstart.md) or the more detailed instructions [here](https://github.com/vknowable/stack-orchestrator/tree/namada):  
+
+**A. Join the latest public testnet:**
 ```
 $ laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=<namada version>"
 $ mkdir -p ~/.local/share/namada
 $ laconic-so --stack public-namada deploy up
 ```
-Join a private testnet:
+**B. Join a private testnet:**
 ```
 $ laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=<namada version> --build-arg BUILD_WASM=true"
 $ mkdir -p ~/.local/share/namada
