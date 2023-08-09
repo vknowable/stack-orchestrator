@@ -16,7 +16,7 @@ laconic-so --stack public-namada build-containers --extra-build-args "--build-ar
 ```
 #### 4. Create a data directory for your node
 ```
-mkdir ~/.local/share/namada
+mkdir -p ~/.local/share/namada
 ```
 #### 5. Start your node
 ```

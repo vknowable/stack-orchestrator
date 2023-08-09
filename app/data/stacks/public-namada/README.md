@@ -6,13 +6,13 @@ Deploy a Namada full node to connect to an existing testnet.
 Join the latest public testnet:
 ```
 $ laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=<namada version>"
-$ mkdir ~/.local/share/namada
+$ mkdir -p ~/.local/share/namada
 $ laconic-so --stack public-namada deploy up
 ```
 Join a private testnet:
 ```
 $ laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=<namada version> --build-arg BUILD_WASM=true"
-$ mkdir ~/.local/share/namada
+$ mkdir -p ~/.local/share/namada
 $ tee <<EOF >/dev/null ~/namada.env
   > CHAIN_ID=<chain id>
   > PERSISTENT_PEERS="tcp://<node id>@<peer ip>:<port>"
@@ -40,7 +40,7 @@ $ laconic-so --stack public-namada build-containers --extra-build-args "--build-
 ### 2. Create data directory
 Create a directory to hold the Namada chain and config data:
 ```
-$ mkdir ~/.local/share/namada
+$ mkdir -p ~/.local/share/namada
 ```
 You can also choose a different location using the `NAMADA_DATA_DIR` variable.
 
