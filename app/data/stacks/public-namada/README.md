@@ -2,6 +2,29 @@
 
 Deploy a Namada full node to connect to an existing testnet.
 
+### Quickstart
+Join the latest public testnet:
+```
+$ laconic-so --stack public-namada setup-repositories
+$ laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=<namada version>"
+$ mkdir ~/.local/share/namada
+$ laconic-so --stack public-namada deploy up
+```
+Join a private testnet:
+```
+$ laconic-so --stack public-namada setup-repositories
+$ laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=<namada version> --build-arg BUILD_WASM=true"
+$ mkdir ~/.local/share/namada
+$ tee <<EOF >/dev/null ~/namada.env
+  > CHAIN_ID=<chain id>
+  > PERSISTENT_PEERS="tcp://<node id>@<peer ip>:<port>"
+  > CONFIGS_SERVER=http://<ip>:<port>
+  > EXTIP=<your public IP>
+  > EOF
+$ laconic-so --stack public-namada deploy --env-file ~/namada.env up
+```
+---
+### Detailed Instructions
 ### 1. Clone required repositories
 ```
 $ laconic-so --stack public-namada setup-repositories
@@ -17,9 +40,9 @@ This will default to the `main` branch of Namada; to join a testnet you will nor
 ```
 $ laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.20.1"
 ```
-If you're joining the public testnet, you may wish to skip compiling the wasm, since it will be fetched when first joining the network. You can skip with the build-arg `SKIP_BUILD_WASM=true`:
+If you're joining a private testnet, you'll also need to build the wasm files with `BUILD_WASM=true`:
 ```
-$ laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.20.1 --build-arg SKIP_BUILD_WASM=true"
+$ laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.20.1 --build-arg BUILD_WASM=true"
 ```
 
 ### 3. Create data directory
@@ -46,10 +69,10 @@ The chain data and configs will remain in `NAMADA_DATA_DIR`; you can delete them
 ### 6. Configuration options
 **Container build args:**
 - `NAMADA_TAG`: git release to checkout
-- `SKIP_BUILD_WASM=true|false`: whether to compile the wasm (default true)
+- `BUILD_WASM=true|false`: whether to compile the wasm (default true)
 
 **Runtime env variables:**
-To change any settings from their default values, place the corresponding environment variables in a file and include it in the start command:
+To change any settings from their default values, place the corresponding environment variables in a file (see [sample.env](https://github.com/vknowable/stack-orchestrator/blob/namada/app/data/config/public-namada/sample.env)) and include it in the start command:
 ```
 $ laconic-so --stack public-namada deploy ---env-file <filename> up
 ```
