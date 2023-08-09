@@ -5,7 +5,7 @@
 #### 2. Install stack-orchestrator and requirements. You can choose 'ok' for any popups you see during installation
 ```
 git clone https://github.com/vknowable/stack-orchestrator.git
-cd stack-orchestrator/ && git checkout namada
+cd stack-orchestrator/ && git checkout local-namada
 apt install python3-pip python3.10-venv -y
 scripts/quick-install-ubuntu.sh
 scripts/developer-mode-setup.sh
