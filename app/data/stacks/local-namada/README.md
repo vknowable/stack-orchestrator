@@ -3,6 +3,7 @@
 Deploy a Namada local testnet with three validators.
 
 ### Quickstart
+After setting up Stack-Orchestrator and its requirements by following either the quick instructions [here](https://github.com/vknowable/stack-orchestrator/blob/local-namada/app/data/stacks/local-namada/quickstart.md) or the more detailed instructions [here](https://github.com/vknowable/stack-orchestrator/tree/local-namada):  
 ```
 $ laconic-so --stack local-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=<namada git tag> --build-arg BUILD_WASM=true"
 $ laconic-so --stack local-namada deploy up
