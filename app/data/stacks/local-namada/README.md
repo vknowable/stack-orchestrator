@@ -1,4 +1,4 @@
-# Namada (local tesnet)
+# Namada (local testnet)
 
 Deploy a Namada local testnet with three validators.
 
