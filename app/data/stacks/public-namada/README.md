@@ -1,4 +1,4 @@
-# Namada (public tesnet)
+# Namada (public testnet)
 
 Deploy a Namada full node to connect to an existing testnet.
 
