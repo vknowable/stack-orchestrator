@@ -7,10 +7,12 @@ After setting up Stack-Orchestrator and its requirements by following either the
 
 **A. Join the latest public testnet:**
 ```
-$ laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=<namada version>"
+$ laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.20.1"
 $ mkdir -p ~/.local/share/namada
 $ laconic-so --stack public-namada deploy up
 ```
+You'll need to set `NAMADA_TAG` to the appropriate version of Namada for the current testnet. You can find which version the latest testnet is using in the [Namada docs](https://docs.namada.net/introduction/testnets/environment-setup).
+
 **B. Join a private testnet:**
 ```
 $ laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=<namada version> --build-arg BUILD_WASM=true"
