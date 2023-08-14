@@ -31,3 +31,5 @@ mainnet-go-opera
 lasso
 reth
 public-namada
+watcher-sushiswap
+contract-sushiswap
