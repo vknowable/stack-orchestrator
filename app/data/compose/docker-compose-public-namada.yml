@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  namada:
+    restart: unless-stopped
+    hostname: namada
+    image: cerc/namada:local
+    entrypoint: ["sh", "/docker-entrypoint-scripts.d/start-node.sh"]
+    volumes:
+      - ../config/public-namada/start-node.sh:/docker-entrypoint-scripts.d/start-node.sh
+      - namada_data:/root/.local/share/namada
+    environment:
+      - CHAIN_ID=$CHAIN_ID
+      - EXTIP=$EXTIP
+      - RPC_LISTEN=$RPC_LISTEN
+      - RPC_CORS_ALLOWED=$RPC_CORS_ALLOWED
+      - INDEXER=$INDEXER
+      - PROM_ENABLE=$PROM_ENABLE
+      - CONFIGS_SERVER=$CONFIGS_SERVER
+      - P2P_PORT=$P2P_PORT
+      - PERSISTENT_PEERS=$PERSISTENT_PEERS
+    ports:
+      - "${P2P_PORT:-26656}:26656" # p2p
+      - "${RPC_PORT:-26657}:26657" # http rpc
+      - "${PROM_PORT:-26660}:26660" # prometheus
+
+volumes:
+  # namada_data:
+  namada_data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: "${NAMADA_DATA_DIR:-$HOME/.local/share/namada}"
