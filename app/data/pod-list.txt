@@ -30,6 +30,7 @@ fixturenet-lotus
 mainnet-go-opera
 lasso
 reth
+namada
 public-namada
 watcher-sushiswap
 contract-sushiswap

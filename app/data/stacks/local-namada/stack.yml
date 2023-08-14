@@ -1,0 +1,9 @@
+version: "1.1"
+name: local-namada
+decription: "Namada local testnet"
+repos:
+  - github.com/anoma/namada
+containers:
+  - cerc/namada
+pods:
+  - local-namada
