@@ -34,6 +34,7 @@ fi
 # set config options
 # External IP to advertise to peers; you will likely wish to set this to your host machine's public IP
 EXTIP=${EXTIP:-''}
+P2P_PORT=${P2P_PORT:-26656}
 if [ -n "$EXTIP" ]; then
   sed -i "s#external_address = \".*\"#external_address = \"$EXTIP:$P2P_PORT\"#g" /root/.local/share/namada/$CHAIN_ID/config.toml
 fi
