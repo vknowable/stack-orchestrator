@@ -40,3 +40,8 @@ github.com/paradigmxyz/reth
 github.com/anoma/namada
 git.vdb.to/cerc-io/plugeth
 git.vdb.to/cerc-io/plugeth-statediff
+github.com/anoma/namada
+github.com/cerc-io/sushiswap-v3-core
+github.com/cerc-io/sushiswap-v3-periphery
+github.com/graphprotocol/graph-node
+github.com/sushiswap/subgraphs

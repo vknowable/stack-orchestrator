@@ -45,3 +45,8 @@ cerc/go-opera
 cerc/lasso
 cerc/reth
 cerc/namada
+cerc/sushiswap-v3-core
+cerc/sushiswap-v3-periphery
+cerc/watcher-sushiswap
+cerc/graph-node
+cerc/sushiswap-subgraphs
