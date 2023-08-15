@@ -4,20 +4,15 @@ This guide will give an example of how to deploy a local Namada testnet on Digit
 #### 1. Create a new droplet on Digital Ocean.
 (Recommended specs: 16GB of RAM and 320GB storage)
 
-#### 2. Install stack-orchestrator and requirements. You can choose 'ok' for any popups you see during installation
+#### 2. Install Stack Orchestrator and requirements.
+On Digital Ocean, you might see some purple popup dialogs whenever you update your packages (including in this script); you can just press enter to select the default options.
 ```
 git clone https://github.com/vknowable/stack-orchestrator.git
 cd stack-orchestrator
-apt install python3-pip python3.10-venv -y
-scripts/quick-install-ubuntu.sh
-scripts/developer-mode-setup.sh
-source ~/.profile
+scripts/namada-quick-install.sh
 ```
-#### 3. Checkout local-namada branch
-Make sure you're on the `local-namada` branch if not already
-```
-git checkout local-namada
-```
+
+#### 3. Logout of your droplet, and then back in again to finish the setup
 
 #### 4. Build Namada containers, including wasm (this can take up to 30 minutes depending on your machine specs)
 Set `NAMADA_TAG` to the version of Namada you wish to deploy on your testnet.
