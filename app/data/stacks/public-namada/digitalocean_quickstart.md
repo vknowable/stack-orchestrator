@@ -4,28 +4,18 @@ This guide will give an example of how to deploy a Namada fullnode on the latest
 #### 1. Create a new droplet on Digital Ocean.
 (Recommended specs: 16GB of RAM and 320GB storage)
 
-#### 2. Install Stack Orchestrator and requirements. You can choose 'ok' for any popups you see during installation
+#### 2. Install Stack Orchestrator and requirements.
+On Digital Ocean, you might see some purple popup dialogs whenever you update your packages (including in this script); you can just press enter to select the default options.
 ```
 git clone https://github.com/vknowable/stack-orchestrator.git
-cd stack-orchestrator && git checkout namada
-apt install python3-pip python3.10-venv -y
-scripts/quick-install-ubuntu.sh
-scripts/developer-mode-setup.sh
-source ~/.profile
+cd stack-orchestrator
+scripts/namada-quick-install.sh
 ```
 
-#### 3. Checkout Namada branch of Stack Orchestrator
-Make sure you're on the `namada` branch if not already
-```
-cd ~/stack-orchestrator
-git checkout namada
-```
-and make sure your installation of Stack Orchestrator is up to date with the one that includes Namada:
-```
-cp venv/bin/laconic-so ~/bin
-```
+#### 3. Logout of your droplet, and then back in again to finish the setup
 
-#### 4. Build Namada containers (this can take up to 30 minutes depending on your machine specs)
+#### 4. Build Namada containers
+If you've chosen the droplet recommended above, this should take around 30-40 minutes. If you went with a slower droplet, it could take up to 2 hours. You'll know it's finished when you're returned to the command prompt.
 ```
 laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.20.1"
 ```
