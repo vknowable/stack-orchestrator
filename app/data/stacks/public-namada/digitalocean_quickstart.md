@@ -17,7 +17,9 @@ Use this command: `ssh root@[ip address]`
 Then enter 'yes' and input your password when asked.
 
 #### 2. Install Stack Orchestrator and requirements.
-On Digital Ocean, you might see some purple popup dialogs whenever you update your packages (including in this script); you can just press enter to select the default options.
+On Digital Ocean, you might see some purple pop-up dialogs whenever you update your packages (including in this script); you can just press enter to select the default options.
+
+Click the copy button. You can paste and then execute this entire thing.
 ```
 git clone https://github.com/vknowable/stack-orchestrator.git
 cd stack-orchestrator
