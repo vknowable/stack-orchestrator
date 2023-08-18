@@ -28,7 +28,7 @@ scripts/namada-quick-install.sh
 You can paste and then execute this entire thing.
 
 #### 3. Logout of your droplet, and then back in again to finish the setup
-type: `exit`
+Type `exit` and press enter to log out.
 
 #### 4. Build Namada containers
 If you've chosen the droplet recommended above, this should take around 30-40 minutes. If you went with a slower droplet, it could take up to 2 hours. You'll know it's finished when you're returned to the command prompt.
