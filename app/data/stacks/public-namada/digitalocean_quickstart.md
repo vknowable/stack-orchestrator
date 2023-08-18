@@ -19,12 +19,13 @@ Then enter 'yes' and input your password when asked.
 #### 2. Install Stack Orchestrator and requirements.
 On Digital Ocean, you might see some purple pop-up dialogs whenever you update your packages (including in this script); you can just press enter to select the default options.
 
-Click the copy button. You can paste and then execute this entire thing.
+Click the copy button (it's the icon with two overlapping squares on the right): 
 ```
 git clone https://github.com/vknowable/stack-orchestrator.git
 cd stack-orchestrator
 scripts/namada-quick-install.sh
 ```
+You can paste and then execute this entire thing.
 
 #### 3. Logout of your droplet, and then back in again to finish the setup
 
