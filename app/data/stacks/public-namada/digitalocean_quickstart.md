@@ -1,8 +1,20 @@
 # Quick guide - Digital Ocean fullnode
 This guide will give an example of how to deploy a Namada fullnode on the latest public testnet.
 
-#### 1. Create a new droplet on Digital Ocean.
-(Recommended specs: 16GB of RAM and 320GB storage)
+#### 1. Create a new droplet (aka instance) on [DigitalOcean](https://cloud.digitalocean.com).
+After you have a DigitalOcean account, create a droplet. We recommend at least 16GB of RAM and 320GB storage.
+
+**Tip:** If you're just testing briefly, select a more powerful machine and the process will be much quicker. If you intend to keep the droplet for a month or more, use the minimum spec machine to save costs.
+
+a) Use a password instead of SSH key (warning: for testing only; not a secure way to operate in production).
+
+b) Get the IP address for your droplet.
+
+c) Remotely connect to your droplet with Terminal (MacOS) or Command Prompt (Windows).
+
+Use this command: `ssh root@[ip address]`
+
+Then enter 'yes' and input your password when asked.
 
 #### 2. Install Stack Orchestrator and requirements.
 On Digital Ocean, you might see some purple popup dialogs whenever you update your packages (including in this script); you can just press enter to select the default options.
