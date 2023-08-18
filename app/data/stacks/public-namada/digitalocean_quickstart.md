@@ -1,8 +1,8 @@
 # Quick guide - Digital Ocean fullnode
-This guide will give an example of how to deploy a Namada fullnode on the latest public testnet.
+This guide will give an example of how to deploy a Namada fullnode either on either the Heliax founding team testnet or Luminara's community-run testnet. In total it takes about an hour, depending on your server specs.
 
-#### 1. Create a new droplet (aka instance) on [DigitalOcean](https://cloud.digitalocean.com).
-After you have a DigitalOcean account, create a droplet. We recommend at least 16GB of RAM and 320GB storage.
+## 1. Create a new droplet (aka instance) on [DigitalOcean](https://cloud.digitalocean.com).
+After you have a DigitalOcean account, create a droplet. We recommend a droplet with 16GB of RAM and 320GB SSD storage (install takes ~40 minutes), but you can use a less expensive droplet with 8GB RAM / 160GB SSD storage (install takes ~2 hours).
 
 **Tip:** If you're just testing briefly, select a more powerful machine and the process will be much quicker. If you intend to keep the droplet for a month or more, use the minimum spec machine to save costs.
 
@@ -16,7 +16,7 @@ Use this command: `ssh root@[ip address]`
 
 Then enter 'yes' and input your password when asked.
 
-#### 2. Install Stack Orchestrator and requirements.
+## 2. Install Stack Orchestrator and requirements.
 On Digital Ocean, you might see some purple pop-up dialogs whenever you update your packages (including in this script); you can just press enter to select the default options.
 
 Click the copy button (it's the icon with two overlapping squares on the right): 
@@ -27,28 +27,38 @@ scripts/namada-quick-install.sh
 ```
 You can paste and then execute this entire thing.
 
-#### 3. Logout of your droplet, and then back in again to finish the setup
+## 3. Logout of your droplet, and then back in again to finish the setup
 Type `exit` and press enter to log out. Use command `ssh root@[ip address]` to log back in.
 
-#### 4. Build Namada containers
+## 4. Build Namada containers
 If you've chosen the droplet recommended above, this should take around 30-40 minutes. If you went with a slower droplet, it could take up to 2 hours. You'll know it's finished when you're returned to the command prompt.
 
-**Wait!** Edit this command to be the correct Namada testnet version [which can be found here](https://namada.net/testnets):
+**Wait!** You'll need to decide which Namada testnet you want to connect to.
+
+### Heliax (founding team's) public testnet
+
+Edit this command to be the correct Namada testnet version [which can be found here](https://namada.net/testnets):
 ```
-laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.20.1"
+laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.21.1"
 ```
+
+### Luminara (community-run) "Campfire" testnet
+```
+laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.20.1 --build-arg BUILD_WASM=true"
+```
+
 All of the release versions can be [found here](https://github.com/anoma/namada/releases).
 
-#### 5. Create a data directory for your node
+## 5. Create a data directory for your node
 ```
 mkdir -p ~/.local/share/namada
 ```
-#### 6. Start your node
+## 6. Start your node
 ```
 laconic-so --stack public-namada deploy up
 ```
 ---
-#### 7. Access your node
+## 7. Access your node
 Get your node's container id
 ```
 docker ps -q
@@ -58,7 +68,7 @@ and then
 docker exec -it <container id> /bin/bash
 ```
 ---
-#### 8. Shut down your node
+## 8. Shut down your node
 ```
 laconic-so --stack public-namada deploy down --delete-volumes
 ```
