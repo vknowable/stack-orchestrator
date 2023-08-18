@@ -32,9 +32,13 @@ Type `exit` and press enter to log out. Use command `ssh root@[ip address]` to l
 
 #### 4. Build Namada containers
 If you've chosen the droplet recommended above, this should take around 30-40 minutes. If you went with a slower droplet, it could take up to 2 hours. You'll know it's finished when you're returned to the command prompt.
+
+**Wait!** Edit this command to be the correct Namada testnet version [which can be found here](https://namada.net/testnets):
 ```
 laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.20.1"
 ```
+All of the release versions can be [found here](https://github.com/anoma/namada/releases).
+
 #### 5. Create a data directory for your node
 ```
 mkdir -p ~/.local/share/namada
