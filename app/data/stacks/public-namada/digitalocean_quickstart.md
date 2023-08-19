@@ -37,12 +37,31 @@ If you've chosen the droplet recommended above, this should take around 30-40 mi
 
 ### Heliax (founding team's) public testnet
 
-Edit this command to be the correct Namada testnet version [which can be found here](https://namada.net/testnets):
+Edit this command to be the current Namada testnet version [which can be found here](https://namada.net/testnets):
 ```
 laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.21.1"
 ```
 
 ### Luminara (community-run) "Campfire" testnet
+to-do: [link to Luminara latest testnet version]
+```
+laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.21.1 --build-arg BUILD_WASM=true"
+```
+
+FYI, all of the release versions can be [found here](https://github.com/anoma/namada/releases).
+
+## 5. Create a data directory for your node
+```
+mkdir -p ~/.local/share/namada
+```
+## 6. Start your node
+
+## Heliax
+```
+laconic-so --stack public-namada deploy up
+```
+
+## Luminara
 Create a text file with the information your node needs to find our testnet:
 ```
 nano ~/luminara.env
@@ -56,20 +75,9 @@ CONFIGS_SERVER=http://72.12.130.222:8081
 PERSISTENT_PEERS="tcp://a329e1eeb21d09a5a7c1575d96fa2240e1f70b70@72.12.130.222:26656"
 ```
 
-Compile Namada binaries and dependencies:
+Start your node
 ```
-laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.21.1 --build-arg BUILD_WASM=true"
-```
-
-FYI, all of the release versions can be [found here](https://github.com/anoma/namada/releases).
-
-## 5. Create a data directory for your node
-```
-mkdir -p ~/.local/share/namada
-```
-## 6. Start your node
-```
-laconic-so --stack public-namada deploy up
+laconic-so --stack public-namada deploy --env-file luminara.env up
 ```
 ---
 ## 7. Access your node
@@ -81,14 +89,17 @@ and then
 ```
 docker exec -it <container id> /bin/bash
 ```
+
+## 8. See node status, make queries (read the chain) and make transactions (write to the chain)
 Wait a minute and then check the status of your node:
 ```
 curl localhost:26657/status | jq .
 ```
 You should see catching `"catching_up": true` while your node syncs, and when it has synced, catching up will be `false`. Then you can perform queries and make transactions.
 
-## 8. Make queries (read the chain) and make transactions (write to the chain)
-[link to cheat sheet and/or quests]
+You can always leave the container with the `exit` command.
+
+to-do: [link to cheat sheet and/or quests]
 
 ---
 ## Shut down and delete your node
