@@ -50,7 +50,7 @@ nohup laconic-so --stack public-namada build-containers --extra-build-args "--bu
 tail -f nohup.out
 ```
 
-**Warning: If your SSH session is disrupted, the process above will continueand must complete before Step 6 (30 mins - 2hrs).** To see the progress, reconnect and use command `tail -f nohup.out` to see progress in realtime.
+to-do: [test nohup] **Warning: If your SSH session is disrupted, the process above will continueand must complete before Step 6 (30 mins - 2hrs).** To see the progress, reconnect and use command `tail -f nohup.out` to see progress in realtime.
 
 ## 5. Create a data directory for your node
 ```
@@ -108,7 +108,8 @@ docker exec -it $CONTAINER /bin/bash
 to-do: [link to cheat sheet and/or quests]
 
 ---
-## Shut down and delete your node
+## Switch networks, shut down or delete your node
+to-do: [instructions for switching between testnets]
 ```
 laconic-so --stack public-namada deploy down --delete-volumes
 ```
