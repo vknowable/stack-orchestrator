@@ -31,24 +31,26 @@ You can paste and then execute this entire thing.
 Type `exit` and press enter to log out. Use command `ssh root@[ip address]` to log back in.
 
 ## 4. Build Namada containers
-If you've chosen the droplet recommended above, this should take around 30-40 minutes. If you went with a slower droplet, it could take up to 2 hours. You'll know it's finished when you're returned to the command prompt.
+If you've chosen the droplet recommended above, this should take around **30-40 minutes**. If you went with a slower droplet, it could take **up to 2 hours**. You'll know it's finished when you're returned to the command prompt.
 
-**Wait!** You'll need to decide which Namada testnet you want to connect to.
+**Wait!** You'll need to decide which Namada testnet you want to connect to. FYI, all of the release versions can be [found here](https://github.com/anoma/namada/releases).
 
 ### Heliax (founding team's) public testnet
 
 Edit this command to be the current Namada testnet version [which can be found here](https://namada.net/testnets):
 ```
-laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.21.1"
+nohup laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.21.1" &
+tail -f nohup.out
 ```
 
 ### Luminara (community-run) "Campfire" testnet
 to-do: [link to Luminara latest testnet version]
 ```
-laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.21.1 --build-arg BUILD_WASM=true"
+nohup laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.21.1 --build-arg BUILD_WASM=true" &
+tail -f nohup.out
 ```
 
-FYI, all of the release versions can be [found here](https://github.com/anoma/namada/releases).
+**Warning: If your SSH session is disrupted, the process above will continueand must complete before Step 6 (30 mins - 2hrs).** To see the progress, reconnect and use command `tail -f nohup.out` to see progress in realtime.
 
 ## 5. Create a data directory for your node
 ```
