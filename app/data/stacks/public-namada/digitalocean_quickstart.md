@@ -1,5 +1,5 @@
 # Quick guide - Digital Ocean fullnode
-This guide will give an example of how to deploy a Namada fullnode either on either the Heliax founding team testnet or Luminara's community-run testnet. In total it takes about an hour, depending on your server specs.
+This is guide for deploying a Namada full node, on either of the two Namada testnets: 1) Heliax (founding team) testnet or 2) Luminara (community-run) testnet. The installation time depends on your server specs, ranging from 1 to 2 hours
 
 ## 1. Create a new droplet (aka instance) on [DigitalOcean](https://cloud.digitalocean.com).
 After you have a DigitalOcean account, create a droplet.
@@ -14,6 +14,8 @@ c) Remotely connect to your droplet with Terminal (MacOS) or Command Prompt (Win
 
 Use this command: `ssh root@[ip address]`
 
+It may take a couple of minutes after creating the droplet to be able to connect, so wait a minute and try again if the connection fails.
+
 Then enter 'yes' and input the droplet password when asked. (FYI, in production you would use SSH keys and user accounts, not root)
 
 ## 2. Install Stack Orchestrator and requirements (~1.5 mins)
@@ -24,11 +26,12 @@ Click the copy button (it's the icon with two overlapping squares on the right):
 git clone https://github.com/vknowable/stack-orchestrator.git
 cd stack-orchestrator
 scripts/namada-quick-install.sh
+exit
 ```
 You can paste and then execute this entire thing.
 
-## 3. Logout of your droplet, and then back in again to finish the setup
-Type `exit` and press enter to log out. Use command `ssh root@[ip address]` to log back in.
+## 3. You'll be logged out of your droplet, so log back in to continue the setup
+Use command `ssh root@[ip address]` to log back in.
 
 ## 4. Build Namada containers
 If you've chosen the droplet recommended above, this should take around **30-40 minutes**. If you went with a slower droplet, it could take **up to 2 hours**. You'll know it's finished when you're returned to the command prompt.
