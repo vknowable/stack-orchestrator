@@ -99,7 +99,11 @@ curl localhost:26657/status | jq .
 ```
 You should see catching `"catching_up": true` while your node syncs, and when it has synced, catching up will be `false`. Then you can perform queries and make transactions.
 
-You can always leave the container with the `exit` command.
+You can always leave the container with the `exit` command, then get back in with:
+```
+CONTAINER=$(docker ps -q)
+docker exec -it $CONTAINER /bin/bash
+```
 
 to-do: [link to cheat sheet and/or quests]
 
