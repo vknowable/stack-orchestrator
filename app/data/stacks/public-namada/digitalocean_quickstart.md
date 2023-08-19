@@ -42,7 +42,7 @@ If you've chosen the droplet recommended above, this should take around **30-40 
 
 Edit this command to be the current Namada testnet version [which can be found here](https://namada.net/testnets):
 ```
-nohup laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.21.1"
+nohup laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.21.1" &
 ```
 Press: ctrl+c
 
@@ -55,7 +55,7 @@ The reason we do this is so that the installation will continue in the case that
 ### Luminara (community-run) "Campfire" testnet
 to-do: [link to Luminara latest testnet version]
 ```
-nohup laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.21.1 --build-arg BUILD_WASM=true"
+nohup laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.21.1 --build-arg BUILD_WASM=true" &
 ```
 Press: ctrl+c
 
