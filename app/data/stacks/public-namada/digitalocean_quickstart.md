@@ -16,7 +16,7 @@ Use this command: `ssh root@[ip address]`
 
 Then enter 'yes' and input the droplet password when asked. (FYI, in production you would use SSH keys and user accounts, not root)
 
-## 2. Install Stack Orchestrator and requirements.
+## 2. Install Stack Orchestrator and requirements (~1.5 mins)
 On Digital Ocean, you might see some purple pop-up dialogs whenever you update your packages (including in this script); you can just press enter to select the default options.
 
 Click the copy button (it's the icon with two overlapping squares on the right): 
@@ -39,18 +39,29 @@ If you've chosen the droplet recommended above, this should take around **30-40 
 
 Edit this command to be the current Namada testnet version [which can be found here](https://namada.net/testnets):
 ```
-nohup laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.21.1" &
+nohup laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.21.1"
+```
+Press: ctrl+c
+
+Then use this command to see the log in realtime:
+```
 tail -f nohup.out
 ```
+The reason we do this is so that the installation will continue in the case that your SSH session is interrupted. If that happens, reconnect (Step 1c) and use command `tail -f nohup.out` to see the installation progress.
 
 ### Luminara (community-run) "Campfire" testnet
 to-do: [link to Luminara latest testnet version]
 ```
-nohup laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.21.1 --build-arg BUILD_WASM=true" &
+nohup laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.21.1 --build-arg BUILD_WASM=true"
+```
+Press: ctrl+c
+
+Then use this command to see the log in realtime:
+```
 tail -f nohup.out
 ```
 
-to-do: [test nohup] **Warning: If your SSH session is disrupted, the process above will continueand must complete before Step 6 (30 mins - 2hrs).** To see the progress, reconnect and use command `tail -f nohup.out` to see progress in realtime.
+The reason we do this is so that the installation will continue in the case that your SSH session is interrupted. If that happens, reconnect (Step 1c) and use command `tail -f nohup.out` to see the installation progress.
 
 ## 5. Create a data directory for your node
 ```
