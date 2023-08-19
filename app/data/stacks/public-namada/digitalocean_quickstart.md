@@ -43,11 +43,25 @@ laconic-so --stack public-namada build-containers --extra-build-args "--build-ar
 ```
 
 ### Luminara (community-run) "Campfire" testnet
+Create a text file with the information your node needs to find our testnet:
 ```
-laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.20.1 --build-arg BUILD_WASM=true"
+nano ~/luminara.env
 ```
 
-All of the release versions can be [found here](https://github.com/anoma/namada/releases).
+Paste this inside, then ctrl+s, ctrl+x
+```
+CHAIN_ID=luminara.bbc5fe23fbe06bd6bec13
+EXTIP=146.190.54.84
+CONFIGS_SERVER=http://72.12.130.222:8081
+PERSISTENT_PEERS="tcp://a329e1eeb21d09a5a7c1575d96fa2240e1f70b70@72.12.130.222:26656"
+```
+
+Compile Namada binaries and dependencies:
+```
+laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.21.1 --build-arg BUILD_WASM=true"
+```
+
+FYI, all of the release versions can be [found here](https://github.com/anoma/namada/releases).
 
 ## 5. Create a data directory for your node
 ```
@@ -67,8 +81,17 @@ and then
 ```
 docker exec -it <container id> /bin/bash
 ```
+Wait a minute and then check the status of your node:
+```
+curl localhost:26657/status | jq .
+```
+You should see catching `"catching_up": true` while your node syncs, and when it has synced, catching up will be `false`. Then you can perform queries and make transactions.
+
+## 8. Make queries (read the chain) and make transactions (write to the chain)
+[link to cheat sheet and/or quests]
+
 ---
-## 8. Shut down your node
+## Shut down and delete your node
 ```
 laconic-so --stack public-namada deploy down --delete-volumes
 ```
