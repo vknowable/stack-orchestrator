@@ -81,13 +81,13 @@ laconic-so --stack public-namada deploy --env-file luminara.env up
 ```
 ---
 ## 7. Access your node
-Get your node's container id
+Set `CONTAINER` as your node's container id
 ```
-docker ps -q
+CONTAINER=$(docker ps -q)
 ```
-and then
+and then get into your node's container to control your node
 ```
-docker exec -it <container id> /bin/bash
+docker exec -it $CONTAINER /bin/bash
 ```
 
 ## 8. See node status, make queries (read the chain) and make transactions (write to the chain)
