@@ -58,12 +58,12 @@ mkdir -p ~/.local/share/namada
 ```
 ## 6. Start your node
 
-## Heliax
+### Heliax
 ```
 laconic-so --stack public-namada deploy up
 ```
 
-## Luminara
+### Luminara
 Create a text file with the information your node needs to find our testnet:
 ```
 nano ~/luminara.env
