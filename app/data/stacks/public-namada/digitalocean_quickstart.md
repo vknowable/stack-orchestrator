@@ -2,11 +2,11 @@
 This guide will give an example of how to deploy a Namada fullnode either on either the Heliax founding team testnet or Luminara's community-run testnet. In total it takes about an hour, depending on your server specs.
 
 ## 1. Create a new droplet (aka instance) on [DigitalOcean](https://cloud.digitalocean.com).
-After you have a DigitalOcean account, create a droplet. We recommend a droplet with 16GB of RAM and 320GB SSD storage (install takes ~40 minutes), but you can use a less expensive droplet with 8GB RAM / 160GB SSD storage (install takes ~2 hours).
+After you have a DigitalOcean account, create a droplet.
 
-**Tip:** If you're just testing briefly, select a more powerful machine and the process will be much quicker. If you intend to keep the droplet for a month or more, use the minimum spec machine to save costs.
+**Tip:** If you're just testing briefly, select a more powerful machine and the process will be much quicker. If you intend to keep the droplet for a month or more, use the minimum spec machine to save costs. We recommend a droplet with 16GB of RAM and 320GB SSD storage (install takes ~40 minutes), but you can use a less expensive droplet with 8GB RAM / 160GB SSD storage (install takes ~2 hours).
 
-a) Use a password instead of SSH key (warning: for testing only; not a secure way to operate in production).
+a) If you're new and trying stuff out, use a password instead of SSH key (warning: for testing only; not a secure way to operate in production).
 
 b) Get the IP address for your droplet.
 
@@ -14,7 +14,7 @@ c) Remotely connect to your droplet with Terminal (MacOS) or Command Prompt (Win
 
 Use this command: `ssh root@[ip address]`
 
-Then enter 'yes' and input your password when asked.
+Then enter 'yes' and input the droplet password when asked. (FYI, in production you would use SSH keys and user accounts, not root)
 
 ## 2. Install Stack Orchestrator and requirements.
 On Digital Ocean, you might see some purple pop-up dialogs whenever you update your packages (including in this script); you can just press enter to select the default options.
