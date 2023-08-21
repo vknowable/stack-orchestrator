@@ -2,9 +2,20 @@
 This is guide for deploying a Namada full node, on either of the two Namada testnets: 1) Heliax (founding team) testnet or 2) Luminara (community-run) testnet. The installation time depends on your server specs, ranging from 1 to 2 hours
 
 ## 1. Create a new droplet (aka instance) on [DigitalOcean](https://cloud.digitalocean.com).
-After you have a DigitalOcean account, create a droplet.
+After you have a DigitalOcean account, create a droplet. If you're only planning to use the droplet for a couple of days, use a more powerful (and more expensive option). If you're planning to keep it running for a weeks/months, use a more cost-effective option and monitor resource consumption.
 
-**Tip:** If you're just testing briefly, select a more powerful machine and the process will be much quicker. If you intend to keep the droplet for a month or more, use the minimum spec machine to save costs. We recommend a droplet with 16GB of RAM and 320GB SSD storage (install takes ~40 minutes), but you can use a less expensive droplet with 8GB RAM / 160GB SSD storage (install takes ~2 hours).
+Basic shared CPU options:
+- **Intel 8gb RAM, 2 CPUs, 160gb SSD storage** - Lowest cost
+  - building Namada takes ~1hr 30mins
+  - storage may fill up if the chain has been long-running, use DigitalOcean to monitor/alert storage & memory
+- **Intel 16gb RAM, 4 CPUs, 320gb SSD storage** - Recommended
+  - building Namada takes ~40mins
+  - storage may fill up if the chain has been long-running, use DigitalOcean to monitor/alert storage
+- **Intel 16gb RAM, 8 CPUs, 480gb SSD storage** - Recommended
+  - building Namada takes ~30mins
+  - use DigitalOcean to monitor/alert storage
+
+**Warning:** Do not use a droplet with 4 CPUs unless you have at least 16gb RAM, or compiling will fail.
 
 a) If you're new and trying stuff out, use a password instead of SSH key (warning: for testing only; not a secure way to operate in production).
 
@@ -18,7 +29,7 @@ It may take a couple of minutes after creating the droplet to be able to connect
 
 Then enter 'yes' and input the droplet password when asked. (FYI, in production you would use SSH keys and user accounts, not root)
 
-## 2. Install Stack Orchestrator and requirements (~1.5 mins)
+## 2. Install Stack Orchestrator (~1.5 mins)
 On Digital Ocean, you might see some purple pop-up dialogs whenever you update your packages (including in this script); you can just press enter to select the default options.
 
 Click the copy button (it's the icon with two overlapping squares on the right): 
