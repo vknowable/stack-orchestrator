@@ -44,38 +44,28 @@ You can paste and then execute this entire thing.
 ## 3. You'll be logged out of your droplet, so log back in to continue the setup
 Use command `ssh root@[ip address]` to log back in.
 
-## 4. Build Namada containers
-If you've chosen the droplet recommended above, this should take around **30-40 minutes**. If you went with a slower droplet, it could take **up to 2 hours**. You'll know it's finished when you're returned to the command prompt.
+## 4. Get Namada Docker image
+You can build the container image as outlined in  the [more detailed instructions](https://github.com/vknowable/stack-orchestrator/blob/main/app/data/stacks/public-namada/README.md), but this can take up to 2 hours depending on your system specs. To make things easier, Knowable maintains a [pre-built image](https://hub.docker.com/r/spork666/namada).
 
-**Wait!** You'll need to decide which Namada testnet you want to connect to. FYI, all of the release versions can be [found here](https://github.com/anoma/namada/releases).
+**Wait!** You'll need to decide which Namada testnet you want to connect to, and determine which version of the Namada software is being used. FYI, all of the release versions can be [found here](https://github.com/anoma/namada/releases).
 
 ### Heliax (founding team's) public testnet
-
-Edit this command to be the current Namada testnet version [which can be found here](https://namada.net/testnets):
-```
-nohup laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.21.1" &
-```
-Press: ctrl+c
-
-Then use this command to see the log in realtime:
-```
-tail -f nohup.out
-```
-The reason we do this is so that the installation will continue in the case that your SSH session is interrupted. If that happens, reconnect (Step 1c) and use command `tail -f nohup.out` to see the installation progress.
+The current version of Namada in use on the Heliax testnet can be found [here](https://namada.net/testnets). (As of writing, it's `v0.21.1`)
 
 ### Luminara (community-run) "Campfire" testnet
-to-do: [link to Luminara latest testnet version]
-```
-nohup laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.21.1 --build-arg BUILD_WASM=true" &
-```
-Press: ctrl+c
+The current version of Namada in use on the Luminara testnet can be found [here](https://testnet.luminara.icu). (As of writing, it’s `v0.21.1`)  
 
-Then use this command to see the log in realtime:
+Once you know which version of Namada is needed, save it to a variable:
 ```
-tail -f nohup.out
+export NAMADA_TAG=v0.21.1
 ```
 
-The reason we do this is so that the installation will continue in the case that your SSH session is interrupted. If that happens, reconnect (Step 1c) and use command `tail -f nohup.out` to see the installation progress.
+And run these commands to download the Namada image and rename it for use with Stack Orchestrator: 
+```
+docker pull spork666/namada:$NAMADA_TAG
+docker image tag spork666/namada:v0.21.1 cerc/namada:local
+```
+
 
 ## 5. Create a data directory for your node
 ```
@@ -84,27 +74,20 @@ mkdir -p ~/.local/share/namada
 ## 6. Start your node
 
 ### Heliax
+When joining the Heliax testnet, no further configuration is needed. You can simply start your node with:
 ```
 laconic-so --stack public-namada deploy up
 ```
 
 ### Luminara
-Create a text file with the information your node needs to find our testnet:
+When joining the Luminara testnet, we'll need to include some addtional config info. Download the configuration file with:
 ```
-nano ~/luminara.env
-```
-
-Paste this inside, then ctrl+s, ctrl+x
-```
-CHAIN_ID=luminara.bbc5fe23fbe06bd6bec13
-EXTIP=146.190.54.84
-CONFIGS_SERVER=http://72.12.130.222:8081
-PERSISTENT_PEERS="tcp://a329e1eeb21d09a5a7c1575d96fa2240e1f70b70@72.12.130.222:26656"
+curl -o ~/luminara.env https://testnet.luminara.icu/luminara.env
 ```
 
-Start your node
+And then use a slightly different command to start your node:
 ```
-laconic-so --stack public-namada deploy --env-file luminara.env up
+laconic-so --stack public-namada deploy --env-file ~/luminara.env up
 ```
 ---
 ## 7. Access your node
