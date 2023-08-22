@@ -6,13 +6,13 @@ After you have a DigitalOcean account, create a droplet. If you're only planning
 
 Basic shared CPU options:
 - **Intel 8gb RAM, 2 CPUs, 160gb SSD storage** - Lowest cost
-  - building Namada takes ~1hr 30mins
+  - building Namada takes ~1hr 05mins
   - storage may fill up if the chain has been long-running, use DigitalOcean to monitor/alert storage & memory
 - **Intel 16gb RAM, 4 CPUs, 320gb SSD storage** - Recommended
-  - building Namada takes ~40mins
+  - building Namada takes ~50mins
   - storage may fill up if the chain has been long-running, use DigitalOcean to monitor/alert storage
 - **Intel 16gb RAM, 8 CPUs, 480gb SSD storage** - Recommended
-  - building Namada takes ~30mins
+  - building Namada takes ~38mins
   - use DigitalOcean to monitor/alert storage
 
 **Warning:** Do not use a droplet with 4 CPUs unless you have at least 16gb RAM, or compiling will fail.
