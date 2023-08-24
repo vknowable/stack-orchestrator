@@ -77,7 +77,7 @@ $ laconic-so --stack public-namada deploy ---env-file <filename> up
 - `RPC_PORT`: host port to use for CometBFT RPC. (default `26657`)
 - `PROM_PORT`: host port to use for Prometheus metrics. (default `26660`)
 - `CHAIN_ID`: chain id to connect to. (default fetch latest from github)
-- `EXTIP=x.x.x.x:<p2p port>`: external IP:port to broadcast to peers, ie: typically your host machine's public IP. (default `""`)
+- `EXTIP=x.x.x.x`: external IP:port to broadcast to peers, ie: typically your host machine's public IP. (default `""`)
 - `RPC_LISTEN=true|false`: if true, RPC will listen on `0.0.0.0`; otherwise it will listen on container's `localhost` only. (default `false`)
 - `RPC_CORS_ALLOWED`: list of allowed CORS origins. Format like this (don't forget the outer single quotes): `'["host 1", "host 2", ..., "host n"]'`. Use `'["*"]'` to allow all hosts. (default `'[]'`)
 - `INDEXER=null|kv|psql`: configure CometBFT transaction indexing; or `null` to disable. (default `null`)
