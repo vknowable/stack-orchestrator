@@ -45,7 +45,7 @@ You can paste and then execute this entire thing.
 Use command `ssh root@[ip address]` to log back in.
 
 ## 4. Get Namada Docker image
-You can build the container image as outlined in  the [more detailed instructions](https://github.com/vknowable/stack-orchestrator/blob/main/app/data/stacks/public-namada/README.md), but this can take up to 2 hours depending on your system specs. To make things easier, Knowable maintains a [pre-built image](https://hub.docker.com/r/spork666/namada).
+You can build the container image as outlined in  the [more detailed instructions](https://github.com/vknowable/stack-orchestrator/blob/main/app/data/stacks/public-namada/README.md), but this takes 30mins to an hour, depending on your system specs. To make things easier, Knowable maintains a [pre-built image](https://hub.docker.com/r/spork666/namada).
 
 **Wait!** You'll need to decide which Namada testnet you want to connect to, and determine which version of the Namada software is being used. FYI, all of the release versions can be [found here](https://github.com/anoma/namada/releases).
 
