@@ -1,0 +1,31 @@
+# Level of logging in the indexer
+log_level = "info"
+network = "luminara"
+
+# Connection information for the PostgreSQL database
+[database]
+host = "db"
+user = "namadexer"
+password = "BatteryStaple"
+dbname = "chain"
+# Optional field to configure a timeout if database connection 
+# fails.
+connection_timeout = 20
+
+# The tendermint RPC address and port to access the Namada node
+[indexer]
+tendermint_addr = "172.17.0.1"
+port = 26657
+
+[server]
+serve_at = "0.0.0.0"
+port = 3030
+
+[jaeger]
+enable = false
+host = "localhost"
+port = 6831
+
+[prometheus]
+host = "0.0.0.0"
+port = 9000

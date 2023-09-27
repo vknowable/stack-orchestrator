@@ -1,0 +1,11 @@
+version: "1.1"
+name: namadexer
+decription: "Namada rpc and indexer"
+repos:
+  # - github.com/anoma/namada
+  - github.com/Zondax/namadexer
+containers:
+  # - cerc/namada
+  - cerc/namadexer
+pods:
+  - namadexer

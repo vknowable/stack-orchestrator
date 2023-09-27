@@ -42,7 +42,7 @@ if [ $(hostname) = "namada-1" ]; then
     # create chain config tar
     # namadac utils init-network --genesis-path /genesis.toml --wasm-checksums-path /wasm/checksums.json --chain-prefix luminara --unsafe-dont-encrypt
     # export CHAIN_ID=$(basename *.tar.gz .tar.gz)
-    INIT_OUTPUT=$(namadac utils init-network --genesis-path /genesis.toml --wasm-checksums-path /wasm/checksums.json --chain-prefix luminara --unsafe-dont-encrypt)
+    INIT_OUTPUT=$(namadac utils init-network --consensus-timeout-commit 6s --genesis-path /genesis.toml --wasm-checksums-path /wasm/checksums.json --chain-prefix luminara --unsafe-dont-encrypt)
     echo "$INIT_OUTPUT"
     CHAIN_ID=$(echo "$INIT_OUTPUT" \
       | grep 'Derived chain ID:' \
@@ -99,6 +99,13 @@ if [ -n "$EXTIP" ]; then
 echo "Advertising public ip $EXTIP"
   sed -i "s#external_address = \".*\"#external_address = \"$EXTIP:${P2P_PORT:-26656}\"#g" /root/.local/share/namada/$CHAIN_ID/config.toml
 fi
+
+## modified for rpc on namada-3 ##
+if [ $(hostname) = "namada-3" ]; then
+  sed -i "s#laddr = \"tcp://.*:26657\"#laddr = \"tcp://0.0.0.0:26657\"#g" /root/.local/share/namada/$CHAIN_ID/config.toml
+  sed -i "s#cors_allowed_origins = .*#cors_allowed_origins = [\"*\"]#g" /root/.local/share/namada/$CHAIN_ID/config.toml
+fi
+#######
 
 # start node
 NAMADA_LOG=info CMT_LOG_LEVEL=p2p:none,pex:error NAMADA_CMT_STDOUT=true namada node ledger run

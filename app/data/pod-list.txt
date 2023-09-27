@@ -34,3 +34,4 @@ namada
 public-namada
 watcher-sushiswap
 contract-sushiswap
+namadexer

@@ -50,7 +50,7 @@ services:
     #   - CHAIN_ID=$CHAIN_ID
     ports:
       - "26656" # p2p
-      - "26657" # http rpc
+      - "26657:26657" # http rpc
 
 volumes:
   namada-1_data:
