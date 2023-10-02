@@ -22,7 +22,7 @@ WORKDIR /app
 COPY --from=builder /usr/local/cargo/bin/server /usr/local/bin/server
 COPY --from=builder /usr/local/cargo/bin/indexer /usr/local/bin/indexer
 
-RUN apt-get update && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y wget && rm -rf /var/lib/apt/lists/*
 
 # default env
 ENV INDEXER_CONFIG_PATH "/app/config/Settings.toml"

@@ -5,14 +5,19 @@ services:
     restart: unless-stopped
     hostname: server
     image: cerc/namadexer:local
-    # entrypoint: ["sh", "/docker-entrypoint-scripts.d/start-server.sh"]
-    entrypoint: ["/bin/bash", "-c", " /usr/local/bin/server"]
+    entrypoint: ["sh", "/docker-entrypoint-scripts.d/start-server.sh"]
+    # entrypoint: ["/bin/bash", "-c", " /usr/local/bin/server"]
     environment:
       - RUST_LOG="namadexer=debug"
       - INDEXER_CONFIG_PATH=/app/config/Settings.toml
+      - CHAIN_ID=$CHAIN_ID
+      - CONFIGS_SERVER=$CONFIGS_SERVER
+      - TENDERMINT_ADDR=$TENDERMINT_ADDR
+      - TENDERMINT_PORT=$TENDERMINT_PORT
     volumes:
-      - ../config/namadexer/Settings.toml:/app/config/Settings.toml
-      - ../config/namadexer/checksums.json:/app/checksums.json
+      - ../config/namadexer/Settings.toml:/app/config/Settings_template.toml
+      - ../config/namadexer/start-server.sh:/docker-entrypoint-scripts.d/start-server.sh
+      # - ../config/namadexer/checksums.json:/app/checksums.json
     ports:
       - "3030:3030"
     depends_on:
@@ -23,14 +28,19 @@ services:
     restart: unless-stopped
     hostname: indexer
     image: cerc/namadexer:local
-    # entrypoint: ["sh", "/docker-entrypoint-scripts.d/start-node.sh"]
-    entrypoint: ["/bin/bash", "-c", "/usr/local/bin/indexer"]
+    entrypoint: ["sh", "/docker-entrypoint-scripts.d/start-indexer.sh"]
+    # entrypoint: ["/bin/bash", "-c", "/usr/local/bin/indexer"]
     volumes:
-      - ../config/namadexer/Settings.toml:/app/config/Settings.toml
-      - ../config/namadexer/checksums.json:/app/checksums.json
+      - ../config/namadexer/Settings.toml:/app/config/Settings_template.toml
+      - ../config/namadexer/start-indexer.sh:/docker-entrypoint-scripts.d/start-indexer.sh
+      # - ../config/namadexer/checksums.json:/app/checksums.json
     environment:
       - RUST_LOG="namadexer=debug"
       - INDEXER_CONFIG_PATH=/app/config/Settings.toml
+      - CHAIN_ID=$CHAIN_ID
+      - CONFIGS_SERVER=$CONFIGS_SERVER
+      - TENDERMINT_ADDR=$TENDERMINT_ADDR
+      - TENDERMINT_PORT=$TENDERMINT_PORT
     # ports:
     depends_on:
       - db
@@ -44,15 +54,15 @@ services:
       POSTGRES_PASSWORD: BatteryStaple
       POSTGRES_DB: chain
     ports:
-      - "5025:5025"
+      - "5025"
   
-  nginx:
-    restart: unless-stopped
-    hostname: nginx
-    image: nginx:latest
-    #environment
-    ports:
-      - "80:80"
+  # nginx:
+  #   restart: unless-stopped
+  #   hostname: nginx
+  #   image: nginx:latest
+  #   #environment
+  #   ports:
+  #     - "80:80"
     
   # namada:
   #   restart: unless-stopped

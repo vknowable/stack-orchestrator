@@ -14,8 +14,8 @@ connection_timeout = 20
 
 # The tendermint RPC address and port to access the Namada node
 [indexer]
-tendermint_addr = "172.17.0.1"
-port = 26657
+tendermint_addr = "TENDERMINT_ADDR"
+port = TENDERMINT_PORT
 
 [server]
 serve_at = "0.0.0.0"
