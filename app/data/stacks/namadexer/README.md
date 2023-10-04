@@ -20,7 +20,9 @@ $ laconic-so --stack namadexer build-containers
 ### 3. Set env variables
 Create a text file with the following info to let the indexer know how to connect with your chain node. `TENDERMINT_ADDR` and `TENDERMINT_PORT` are required; `CONFIGS_SERVER` and `CHAIN_ID` are needed to connect to an arbitrary testnet, but will default to fetching the configs for the latest Heliax public testnet `public-testnet-xxxx` from GitHub if not provided. (Namadexer needs to fetch the chain configs to get the chain's checksums.json file.)  
 
-Remember to set Tendermint's IP address relative to the Docker container. For example, if your node is running on the same machine, the IP address relative to the container will be something like `172.16.0.1` instead of `localhost`. You can find the IP address of your host machine relative to Docker using the command `ip a` and looking for the entry for the `docker0` interface.
+Remember to set Tendermint's IP address relative to the Docker container. For example, if your node is running on the same machine, the IP address relative to the container will be something like `172.16.0.1` instead of `localhost`. You can find the IP address of your host machine relative to Docker using the command `ip a` and looking for the entry for the `docker0` interface.  
+
+Sample env file contents:  
 ```
 # sample namadexer.env
 CONFIGS_SERVER=https://testnet.luminara.icu/configs
