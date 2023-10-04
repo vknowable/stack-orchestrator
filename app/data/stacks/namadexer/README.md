@@ -36,7 +36,7 @@ Start the Namadexer stack with:
 ```
 $ laconic-so --stack namadexer deploy --env-file <.env file created in step 3> up
 ```
-By default, this will attempt to find and connect to the chain-id of the latest public testnet listed on the repo `https://github.com/heliaxdev/anoma-network-config`. To connect to a different network, see **Section 6**.
+By default, this will attempt to find and connect to the chain-id of the latest public testnet listed on the repo `https://github.com/heliaxdev/anoma-network-config`. To connect to a different network, see **Step 3**.
 
 ### 5. Stop the stack
 Stop/remove containers and clean-up resources:
