@@ -3,7 +3,7 @@
 Deploy [Namadexer](https://github.com/Zondax/namadexer/tree/main) indexer/server/db
 
 ### Prerequisite
-You will need a full node with the Tendermint RPC (e.g.: http://localhost:26657) accessible.  
+You will need a full node with the Tendermint RPC (e.g.: `http://localhost:26657`) accessible.  
 
 ### 1. Clone repositories
 Clone the Namadexer repo:
@@ -57,4 +57,4 @@ The Namadexer server also exposes a json RPC on port `3030`. For example:
 $ curl -H 'Content-Type: application/json' localhost:3030/block/last
 ```
 
-Check the project docs at (https://github.com/Zondax/namadexer/blob/main/docs/04-server.md)[https://github.com/Zondax/namadexer/blob/main/docs/04-server.md] for a list of endpoints and example queries.
+Check the project docs at https://github.com/Zondax/namadexer/blob/main/docs/04-server.md for a list of endpoints and example queries.
