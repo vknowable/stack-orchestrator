@@ -1,105 +1,60 @@
-# Namada (public testnet)
+# Namadexer
 
-Deploy a Namada full node to connect to an existing testnet.
+Deploy [Namadexer](https://github.com/Zondax/namadexer/tree/main) indexer/server/db
 
-### Quickstart
-After setting up Stack-Orchestrator and its requirements by following either the quick instructions [here](https://github.com/vknowable/stack-orchestrator/blob/namada/app/data/stacks/public-namada/quickstart.md) or the more detailed instructions [here](https://github.com/vknowable/stack-orchestrator/tree/namada):  
+### Prerequisite
+You will need a full node with the Tendermint RPC (e.g.: http://localhost:26657) accessible.  
 
-**A. Join the latest public testnet:**
+### 1. Clone repositories
+Clone the Namadexer repo:
 ```
-$ laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.20.1"
-$ mkdir -p ~/.local/share/namada
-$ laconic-so --stack public-namada deploy up
-```
-You'll need to set `NAMADA_TAG` to the appropriate version of Namada for the current testnet. You can find which version the latest testnet is using in the [Namada docs](https://docs.namada.net/introduction/testnets/environment-setup).
-
-**B. Join a private testnet:**
-```
-$ laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=<namada version> --build-arg BUILD_WASM=true"
-$ mkdir -p ~/.local/share/namada
-$ tee <<EOF >/dev/null ~/namada.env
-  > CHAIN_ID=<chain id>
-  > PERSISTENT_PEERS="tcp://<node id>@<peer ip>:<port>"
-  > CONFIGS_SERVER=http://<ip>:<port>
-  > EXTIP=<your public IP>
-  > EOF
-$ laconic-so --stack public-namada deploy --env-file ~/namada.env up
-```
----
-### Detailed Instructions
-### 1. Build containers
-Build the Namada binaries, wasm files, and CometBFT:
-```
-$ laconic-so --stack public-namada build-containers
-```
-This will default to the `main` branch of Namada; to join a testnet you will normally need to checkout a specific version. Specify the version to build like so:
-```
-$ laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.20.1"
-```
-If you're joining a private testnet, you'll also need to build the wasm files with `BUILD_WASM=true`:
-```
-$ laconic-so --stack public-namada build-containers --extra-build-args "--build-arg NAMADA_TAG=v0.20.1 --build-arg BUILD_WASM=true"
+$ laconic-so --stack namadexer setup-repositories
 ```
 
-### 2. Create data directory
-Create a directory to hold the Namada chain and config data:
+### 2. Build containers
+Build the Namadexer containers:
 ```
-$ mkdir -p ~/.local/share/namada
+$ laconic-so --stack namadexer build-containers
 ```
-You can also choose a different location using the `NAMADA_DATA_DIR` variable.
 
-### 3. Start the node
-Start the node with:
+### 3. Set env variables
+Create a text file with the following info to let the indexer know how to connect with your chain node. `TENDERMINT_ADDR` and `TENDERMINT_PORT` are required; `CONFIGS_SERVER` and `CHAIN_ID` are needed to connect to an arbitrary testnet, but will default to fetching the configs for the latest Heliax public testnet `public-testnet-xxxx` from GitHub if not provided. (Namadexer needs to fetch the chain configs to get the chain's checksums.json file.)  
+
+Remember to set Tendermint's IP address relative to the Docker container. For example, if your node is running on the same machine, the IP address relative to the container will be something like `172.16.0.1` instead of `localhost`. You can find the IP address of your host machine relative to Docker using the command `ip a` and looking for the entry for the `docker0` interface.
 ```
-$ laconic-so --stack public-namada deploy up
+# sample namadexer.env
+CONFIGS_SERVER=https://testnet.luminara.icu/configs
+CHAIN_ID=luminara.e41ce04cc1788ebdcc527
+TENDERMINT_ADDR=172.16.0.1
+TENDERMINT_PORT=36657
+```
+
+### 4. Start the stack
+Start the Namadexer stack with:
+```
+$ laconic-so --stack namadexer deploy --env-file <.env file created in step 3> up
 ```
 By default, this will attempt to find and connect to the chain-id of the latest public testnet listed on the repo `https://github.com/heliaxdev/anoma-network-config`. To connect to a different network, see **Section 6**.
 
-### 4. Stop the node
+### 5. Stop the stack
 Stop/remove containers and clean-up resources:
 ```
-$ laconic-so --stack public-namada deploy down --delete-volumes
+$ laconic-so --stack namadexer deploy down --delete-volumes
 ```
-The chain data and configs will remain in `NAMADA_DATA_DIR`; you can delete them manually if no longer needed.
 
-### Configuration options
-**Container build args:**
-- `NAMADA_TAG`: git release to checkout
-- `BUILD_WASM=true|false`: whether to compile the wasm (default true)
-
-**Runtime env variables:**
-To change any settings from their default values, place the corresponding environment variables in a file (see [sample.env](https://github.com/vknowable/stack-orchestrator/blob/namada/app/data/config/public-namada/sample.env)) and include it in the start command:
-```
-$ laconic-so --stack public-namada deploy ---env-file <filename> up
-```
-- `NAMADA_DATA_DIR`: host directory to use for data storage (default `~/.local/share/namada`)
-- `P2P_PORT`: host port to use for P2P. (default `26656`)
-- `RPC_PORT`: host port to use for CometBFT RPC. (default `26657`)
-- `PROM_PORT`: host port to use for Prometheus metrics. (default `26660`)
-- `CHAIN_ID`: chain id to connect to. (default fetch latest from github)
-- `EXTIP=x.x.x.x`: external IP:port to broadcast to peers, ie: typically your host machine's public IP. (default `""`)
-- `RPC_LISTEN=true|false`: if true, RPC will listen on `0.0.0.0`; otherwise it will listen on container's `localhost` only. (default `false`)
-- `RPC_CORS_ALLOWED`: list of allowed CORS origins. Format like this (don't forget the outer single quotes): `'["host 1", "host 2", ..., "host n"]'`. Use `'["*"]'` to allow all hosts. (default `'[]'`)
-- `INDEXER=null|kv|psql`: configure CometBFT transaction indexing; or `null` to disable. (default `null`)
-- `PROM_ENABLE=true|false`: whether to enable Prometheus metrics
-- `PERSISTENT_PEERS`: a comma-separated list of persistent peers to connect to. (default use peers listed in genesis file)
-- `CONFIGS_SERVER=http://x.x.x.x:<port>`: if joining a private testnet, the download location of the chain config *.tar.gz*
-
-### Interacting with the node
-You can use Docker commands as you normally would to interact with the container.  
-First, get the container id:
+### Interacting with the stack
+You can check the logs for the indexer container directly to see how indexing is progressing:
 ```
 $ docker ps
+# get the container id corresponding to the indexer container
+
+$ docker logs -f <indexer container id>
 ```
-Check logs, which should show blocks syncing:
+You should see log entries indicating blocks are being indexed.  
+
+The Namadexer server also exposes a json RPC on port `3030`. For example:
 ```
-$ docker logs -f <container id>
+$ curl -H 'Content-Type: application/json' localhost:3030/block/last
 ```
-Check node status:
-```
-$ docker exec <container id> "curl localhost:26657/status"
-```
-Get a bash shell inside the container:
-```
-$ docker exec -it <container id> /bin/bash
-```
+
+Check the project docs at (https://github.com/Zondax/namadexer/blob/main/docs/04-server.md)[https://github.com/Zondax/namadexer/blob/main/docs/04-server.md] for a list of endpoints and example queries.
