@@ -35,7 +35,7 @@ else
 fi
 
 # replace placeholder text in the TOML file with environment variables
-sed "s/TENDERMINT_ADDR/$TENDERMINT_ADDR/g; s/TENDERMINT_PORT/$TENDERMINT_PORT/g" /app/config/Settings_template.toml > /app/config/Settings.toml
+sed "s#TENDERMINT_ADDR#$TENDERMINT_ADDR#g; s#TENDERMINT_PORT#$TENDERMINT_PORT#g" /app/config/Settings_template.toml > /app/config/Settings.toml
 
 # start server
 echo "starting server..."
