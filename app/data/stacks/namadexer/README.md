@@ -27,7 +27,7 @@ Sample env file contents:
 # sample namadexer.env
 CONFIGS_SERVER=https://testnet.luminara.icu/configs
 CHAIN_ID=luminara.e41ce04cc1788ebdcc527
-TENDERMINT_ADDR=172.16.0.1
+TENDERMINT_ADDR=http://172.16.0.1
 TENDERMINT_PORT=36657
 ```
 
