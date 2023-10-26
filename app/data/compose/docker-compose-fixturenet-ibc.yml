@@ -1,0 +1,64 @@
+version: "3.8"
+
+services:
+  agd-validator:
+    restart: unless-stopped
+    hostname: agd-validator
+    image: cerc/agd:local
+    entrypoint: ["sh", "/docker-entrypoint-scripts.d/start-agd.sh"]
+    volumes:
+      - ../config/fixturenet-ibc/start-agd.sh:/docker-entrypoint-scripts.d/start-agd.sh
+      - agoric-shared:/root/.agoric-shared
+    # environment:
+    #   - P2P_PORT=${P2P_PORT}
+    ports:
+      - "26656" # p2p
+      - "26657" # http rpc
+
+  agd-fullnode:
+    restart: unless-stopped
+    hostname: agd-fullnode
+    image: cerc/agd:local
+    entrypoint: ["sh", "/docker-entrypoint-scripts.d/start-agd.sh"]
+    volumes:
+      - ../config/fixturenet-ibc/start-agd.sh:/docker-entrypoint-scripts.d/start-agd.sh
+      - agoric-shared:/root/.agoric-shared
+    # environment:
+    #   - P2P_PORT=${P2P_PORT}
+    ports:
+      - "26656" # p2p
+      - "26657" # http rpc
+      - "26660" # prometheus
+    
+  gaiad-validator:
+    restart: unless-stopped
+    hostname: gaiad-validator
+    image: cerc/gaiad:local
+    entrypoint: ["sh", "/docker-entrypoint-scripts.d/start-gaiad.sh"]
+    volumes:
+      - ../config/fixturenet-ibc/start-gaiad.sh:/docker-entrypoint-scripts.d/start-gaiad.sh
+      - gaia-shared:/root/.gaia-shared
+    # environment:
+    #   - P2P_PORT=${P2P_PORT}
+    ports:
+      - "26656" # p2p
+      - "26657" # http rpc
+
+  gaiad-fullnode:
+    restart: unless-stopped
+    hostname: gaiad-fullnode
+    image: cerc/gaiad:local
+    entrypoint: ["sh", "/docker-entrypoint-scripts.d/start-gaiad.sh"]
+    volumes:
+      - ../config/fixturenet-ibc/start-gaiad.sh:/docker-entrypoint-scripts.d/start-gaiad.sh
+      - gaia-shared:/root/.gaia-shared
+    # environment:
+    #   - P2P_PORT=${P2P_PORT}
+    ports:
+      - "26656" # p2p
+      - "26657" # http rpc
+      - "26660" # prometheus
+
+volumes:
+  agoric-shared:
+  gaia-shared:
