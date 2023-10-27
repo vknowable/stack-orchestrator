@@ -52,3 +52,4 @@ cerc/graph-node
 cerc/sushiswap-subgraphs
 cerc/agd
 cerc/gaiad
+cerc/relayer

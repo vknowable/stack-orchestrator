@@ -47,3 +47,4 @@ github.com/graphprotocol/graph-node
 github.com/sushiswap/subgraphs
 github.com/Agoric/agoric-sdk
 github.com/cosmos/gaia
+github.com/cosmos/relayer

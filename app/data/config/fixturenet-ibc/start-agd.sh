@@ -2,8 +2,9 @@
 
 agd version
 
-KEY="$(hostname)-key"
-CHAIN_ID=${CHAIN_ID:-agd-local}
+NODE_KEY="$(hostname)-key"
+RELAYER_KEY="relayer-key"
+CHAIN_ID=${CHAIN_ID:-agoric-localnet}
 MONIKER="$(hostname)" 
 KEYRING_BACKEND="test"
 LOGLEVEL=info
@@ -14,7 +15,8 @@ command -v jq > /dev/null 2>&1 || { echo >&2 "jq not installed. More info: https
 agd config keyring-backend $KEYRING_BACKEND
 agd config chain-id $CHAIN_ID
 
-agd keys add $KEY
+# add node key
+agd keys add $NODE_KEY
 
 agd init $MONIKER --chain-id $CHAIN_ID
 
@@ -26,11 +28,17 @@ if [ $(hostname) = "agd-validator" ]; then
   cat $HOME/.agoric/config/genesis.json | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="ubld"' > $HOME/.agoric/config/tmp_genesis.json && mv $HOME/.agoric/config/tmp_genesis.json $HOME/.agoric/config/genesis.json
   cat $HOME/.agoric/config/genesis.json | jq '.app_state["mint"]["params"]["mint_denom"]="ubld"' > $HOME/.agoric/config/tmp_genesis.json && mv $HOME/.agoric/config/tmp_genesis.json $HOME/.agoric/config/genesis.json
 
+  # we also need to fund an account for the relayer
+  # create a key and store the mnemonic so the relayer can import it later
+  agd keys add $RELAYER_KEY 2>relayer_key_outfile
+  RELAYER_MNEMONIC=$(tail -n 1 relayer_key_outfile)
+
   # allocate genesis accounts (cosmos formatted addresses)
-  agd add-genesis-account $KEY 100000000000000000000000000ubld --keyring-backend $KEYRING_BACKEND
+  agd add-genesis-account $NODE_KEY 100000000000000000000000000ubld,100000000000000000000000000uist --keyring-backend $KEYRING_BACKEND
+  agd add-genesis-account $RELAYER_KEY 100000000000000000000000000ubld,100000000000000000000000000uist --keyring-backend $KEYRING_BACKEND
 
   # sign genesis transaction
-  agd gentx $KEY 1000000000000000000000ubld --chain-id $CHAIN_ID
+  agd gentx $NODE_KEY 1000000000000000000000ubld --chain-id $CHAIN_ID
 
   # collect genesis tx
   agd collect-gentxs
@@ -51,6 +59,9 @@ if [ $(hostname) = "agd-validator" ]; then
 
   # copy genesis file to shared volume
   cp $HOME/.agoric/config/genesis.json $HOME/.agoric-shared/genesis.json
+
+  # write relayer mnemonic to shared volume
+  echo "$RELAYER_MNEMONIC" > $HOME/.agoric-shared/agoric_relayer_key
 
 # full-node will wait until genesis file is prepared
 else
@@ -89,4 +100,4 @@ else
   fi
 fi
 
-agd start --log_level $LOGLEVEL --minimum-gas-prices=0.0001ubld
+agd start --log_level $LOGLEVEL #--minimum-gas-prices=0.0001ubld

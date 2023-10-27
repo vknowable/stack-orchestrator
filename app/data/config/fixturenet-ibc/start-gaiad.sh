@@ -2,8 +2,9 @@
 
 gaiad version
 
-KEY="$(hostname)-key"
-CHAIN_ID=${CHAIN_ID:-gaia-local}
+NODE_KEY="$(hostname)-key"
+RELAYER_KEY="relayer-key"
+CHAIN_ID=${CHAIN_ID:-gaia-localnet}
 MONIKER="$(hostname)" 
 KEYRING_BACKEND="test"
 LOGLEVEL=info
@@ -14,7 +15,8 @@ command -v jq > /dev/null 2>&1 || { echo >&2 "jq not installed. More info: https
 gaiad config keyring-backend $KEYRING_BACKEND
 gaiad config chain-id $CHAIN_ID
 
-gaiad keys add $KEY
+# add node key
+gaiad keys add $NODE_KEY
 
 gaiad init $MONIKER --chain-id $CHAIN_ID
 
@@ -26,11 +28,17 @@ if [ $(hostname) = "gaiad-validator" ]; then
   cat $HOME/.gaia/config/genesis.json | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="uatom"' > $HOME/.gaia/config/tmp_genesis.json && mv $HOME/.gaia/config/tmp_genesis.json $HOME/.gaia/config/genesis.json
   cat $HOME/.gaia/config/genesis.json | jq '.app_state["mint"]["params"]["mint_denom"]="uatom"' > $HOME/.gaia/config/tmp_genesis.json && mv $HOME/.gaia/config/tmp_genesis.json $HOME/.gaia/config/genesis.json
 
+  # we also need to fund an account for the relayer
+  # create a key and store the mnemonic so the relayer can import it later
+  gaiad keys add $RELAYER_KEY 2>relayer_key_outfile
+  RELAYER_MNEMONIC=$(tail -n 1 relayer_key_outfile)
+
   # allocate genesis accounts (cosmos formatted addresses)
-  gaiad add-genesis-account $KEY 100000000000000000000000000uatom
+  gaiad add-genesis-account $NODE_KEY 100000000000000000000000000uatom
+  gaiad add-genesis-account $RELAYER_KEY 100000000000000000000000000uatom
 
   # sign genesis transaction
-  gaiad gentx $KEY 1000000000000000000000uatom --chain-id $CHAIN_ID
+  gaiad gentx $NODE_KEY 1000000000000000000000uatom --chain-id $CHAIN_ID
 
   # collect genesis tx
   gaiad collect-gentxs
@@ -51,6 +59,9 @@ if [ $(hostname) = "gaiad-validator" ]; then
 
   # copy genesis file to shared volume
   cp $HOME/.gaia/config/genesis.json $HOME/.gaia-shared/genesis.json
+
+  # write relayer mnemonic to shared volume
+  echo "$RELAYER_MNEMONIC" > $HOME/.gaia-shared/gaia_relayer_key
 
 # full-node will wait until genesis file is prepared
 else
@@ -89,4 +100,4 @@ else
   fi
 fi
 
-gaiad start --log_level $LOGLEVEL --minimum-gas-prices=0.0001uatom
+gaiad start --log_level $LOGLEVEL #--minimum-gas-prices=0.0001uatom

@@ -1,0 +1,16 @@
+{
+  "type": "cosmos",
+  "value": {
+    "key": "relayer-key",
+    "chain-id": "agoric-localnet",
+    "rpc-addr": "http://ibc-agd-fullnode-1:26657",
+    "account-prefix": "agoric",
+    "keyring-backend": "test",
+    "gas-adjustment": 2.5,
+    "gas-prices": "0.1ubld",
+    "debug": true,
+    "timeout": "20s",
+    "output-format": "json",
+    "sign-mode": "direct"
+  }
+}

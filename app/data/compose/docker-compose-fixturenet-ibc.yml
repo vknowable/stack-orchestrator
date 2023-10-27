@@ -9,8 +9,6 @@ services:
     volumes:
       - ../config/fixturenet-ibc/start-agd.sh:/docker-entrypoint-scripts.d/start-agd.sh
       - agoric-shared:/root/.agoric-shared
-    # environment:
-    #   - P2P_PORT=${P2P_PORT}
     ports:
       - "26656" # p2p
       - "26657" # http rpc
@@ -23,8 +21,6 @@ services:
     volumes:
       - ../config/fixturenet-ibc/start-agd.sh:/docker-entrypoint-scripts.d/start-agd.sh
       - agoric-shared:/root/.agoric-shared
-    # environment:
-    #   - P2P_PORT=${P2P_PORT}
     ports:
       - "26656" # p2p
       - "26657" # http rpc
@@ -38,8 +34,6 @@ services:
     volumes:
       - ../config/fixturenet-ibc/start-gaiad.sh:/docker-entrypoint-scripts.d/start-gaiad.sh
       - gaia-shared:/root/.gaia-shared
-    # environment:
-    #   - P2P_PORT=${P2P_PORT}
     ports:
       - "26656" # p2p
       - "26657" # http rpc
@@ -52,12 +46,26 @@ services:
     volumes:
       - ../config/fixturenet-ibc/start-gaiad.sh:/docker-entrypoint-scripts.d/start-gaiad.sh
       - gaia-shared:/root/.gaia-shared
-    # environment:
-    #   - P2P_PORT=${P2P_PORT}
     ports:
       - "26656" # p2p
       - "26657" # http rpc
       - "26660" # prometheus
+
+  relayer:
+    restart: unless-stopped
+    hostname: relayer
+    image: cerc/relayer:local
+    entrypoint: ["sh", "/docker-entrypoint-scripts.d/start-relayer.sh"]
+    volumes:
+      - ../config/fixturenet-ibc/start-relayer.sh:/docker-entrypoint-scripts.d/start-relayer.sh
+      - ../config/fixturenet-ibc/gaia-localnet.json:/root/chains/gaia-localnet.json
+      - ../config/fixturenet-ibc/agoric-localnet.json:/root/chains/agoric-localnet.json
+      - agoric-shared:/root/.agoric-shared
+      - gaia-shared:/root/.gaia-shared
+    # ports:
+    #   - "26656" # p2p
+    #   - "26657" # http rpc
+    #   - "26660" # prometheus
 
 volumes:
   agoric-shared:
