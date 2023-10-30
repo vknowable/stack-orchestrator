@@ -1,0 +1,13 @@
+version: "1.1"
+name: fixturenet-ibc
+decription: "Ibc test fixturenet"
+repos:
+  - github.com/Agoric/agoric-sdk
+  - github.com/cosmos/gaia
+  - github.com/cosmos/relayer
+containers:
+  - cerc/agd
+  - cerc/gaiad
+  - cerc/relayer
+pods:
+  - fixturenet-ibc

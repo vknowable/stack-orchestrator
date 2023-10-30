@@ -50,3 +50,6 @@ cerc/sushiswap-v3-periphery
 cerc/watcher-sushiswap
 cerc/graph-node
 cerc/sushiswap-subgraphs
+cerc/agd
+cerc/gaiad
+cerc/relayer

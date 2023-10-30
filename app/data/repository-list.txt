@@ -45,3 +45,6 @@ github.com/cerc-io/sushiswap-v3-core
 github.com/cerc-io/sushiswap-v3-periphery
 github.com/graphprotocol/graph-node
 github.com/sushiswap/subgraphs
+github.com/Agoric/agoric-sdk
+github.com/cosmos/gaia
+github.com/cosmos/relayer
