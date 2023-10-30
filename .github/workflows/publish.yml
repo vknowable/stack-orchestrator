@@ -2,9 +2,10 @@ name: Publish
 
 on:
   push:
-    branches:
-      - main
-      - publish-test
+    branches: '*'
+    paths:
+      - '!**'
+      - '.github/workflows/triggers/publish-job'
 
 jobs:
   publish:

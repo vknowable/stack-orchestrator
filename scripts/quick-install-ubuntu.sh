@@ -87,7 +87,7 @@ echo "Installing laconic-so"
 # install latest `laconic-so`
 install_filename=${install_dir}/laconic-so
 mkdir -p  ${install_dir}
-curl -L -o ${install_filename} https://github.com/cerc-io/stack-orchestrator/releases/latest/download/laconic-so
+curl -L -o ${install_filename} https://github.com/vknowable/stack-orchestrator/releases/latest/download/laconic-so
 chmod +x ${install_filename}
 
 echo "**************************************************************************************"
