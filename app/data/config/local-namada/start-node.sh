@@ -3,6 +3,7 @@
 # TODO: set chain-prefix by env var
 
 namada --version
+apt install expect -y  # namadaw key gen doesn't seem to have non-interactive option yet
 
 # clean up the http server when the script exits
 cleanup() {
@@ -15,13 +16,22 @@ export ALIAS=$(hostname)
 
 if [ ! -f "/root/.namada-shared/chain.config" ]; then
   # generate validator keys
-  namada client utils init-genesis-validator --alias $ALIAS \
-  --max-commission-rate-change 0.01 --commission-rate 0.05 \
-  --net-address $PUBLIC_IP:26656 --unsafe-dont-encrypt
+  expect /scripts/key-gen.exp $ALIAS
 
-  # Pre-genesis toml is written to /root/.local/share/namada/pre-genesis/namada-x/validator.toml
+  namada client utils init-genesis-validator \
+    --source $ALIAS \
+    --alias $ALIAS \
+    --net-address "${PUBLIC_IP}:26656" \
+    --commission-rate 0.05 \
+    --max-commission-rate-change 0.01 \
+    --transfer-from-source-amount 10000000 \
+    --self-bond-amount 1000000 \
+    --email "$ALIAS@namada.net" \
+    --unsafe-dont-encrypt
+
+  # Pre-genesis toml is written to /root/.local/share/namada/pre-genesis/namada-x/transactions.toml
   mkdir -p /root/.namada-shared/$ALIAS
-  cp -a /root/.local/share/namada/pre-genesis/$ALIAS/validator.toml /root/.namada-shared/$ALIAS
+  cp -a /root/.local/share/namada/pre-genesis/$ALIAS/transactions.toml /root/.namada-shared/$ALIAS
 fi
 
 ############  generating chain configs, done on host namada-1 only ############ 
@@ -36,13 +46,31 @@ if [ $(hostname) = "namada-1" ]; then
 
     echo "Validator configs found. Generating chain configs..."
 
-    # modify genesis template and add validator tomls to create genesis toml
-    python3 make_genesis.py /root/.namada-shared/ genesis_template.toml >genesis.toml
+    # create directory for genesis toml files
+    mkdir -p /root/.namada-shared/genesis
+    cp /genesis/parameters.toml /root/.namada-shared/genesis/parameters.toml
+    cp /genesis/tokens.toml /root/.namada-shared/genesis/tokens.toml
+    cp /genesis/validity-predicates.toml /root/.namada-shared/genesis/validity-predicates.toml
+    cp /genesis/transactions.toml /root/.namada-shared/genesis/transactions.toml
 
-    # create chain config tar
-    # namadac utils init-network --genesis-path /genesis.toml --wasm-checksums-path /wasm/checksums.json --chain-prefix luminara --unsafe-dont-encrypt
-    # export CHAIN_ID=$(basename *.tar.gz .tar.gz)
-    INIT_OUTPUT=$(namadac utils init-network --genesis-path /genesis.toml --wasm-checksums-path /wasm/checksums.json --chain-prefix luminara --unsafe-dont-encrypt)
+    # add validator transactions to transactions.toml
+    cat /root/.namada-shared/namada-1/transactions.toml >> /root/.namada-shared/genesis/transactions.toml
+    cat /root/.namada-shared/namada-2/transactions.toml >> /root/.namada-shared/genesis/transactions.toml
+    cat /root/.namada-shared/namada-3/transactions.toml >> /root/.namada-shared/genesis/transactions.toml
+
+    # add account alias 'bertha' (pgf-steward account)
+    cat /genesis/bertha.toml >> /root/.namada-shared/genesis/transactions.toml
+
+    # python script to read validator/bertha pk's from their toml files, and add them to the balances.toml
+    python3 /scripts/make_balances.py /root/.namada-shared /genesis/balances.toml > /root/.namada-shared/genesis/balances.toml
+
+    INIT_OUTPUT=$(namadac utils init-network \
+      --genesis-time "2023-11-13T00:00:00Z" \
+      --wasm-checksums-path /wasm/checksums.json \
+      --chain-prefix luminara \
+      --templates-path /root/.namada-shared/genesis \
+      --consensus-timeout-commit 10s)
+    
     echo "$INIT_OUTPUT"
     CHAIN_ID=$(echo "$INIT_OUTPUT" \
       | grep 'Derived chain ID:' \
@@ -98,6 +126,14 @@ EXTIP=${EXTIP:-''}
 if [ -n "$EXTIP" ]; then
 echo "Advertising public ip $EXTIP"
   sed -i "s#external_address = \".*\"#external_address = \"$EXTIP:${P2P_PORT:-26656}\"#g" /root/.local/share/namada/$CHAIN_ID/config.toml
+fi
+
+# allow rpc connections on namada-3 node
+if [ $(hostname) = "namada-3" ]; then
+  sed -i "s#laddr = \"tcp://.*:26657\"#laddr = \"tcp://0.0.0.0:26657\"#g" /root/.local/share/namada/$CHAIN_ID/config.toml
+  sed -i "s#cors_allowed_origins = .*#cors_allowed_origins = [\"*\"]#g" /root/.local/share/namada/$CHAIN_ID/config.toml
+  sed -i "s#prometheus = .*#prometheus = true#g" /root/.local/share/namada/$CHAIN_ID/config.toml
+  sed -i "s#namespace = .*#namespace = \"tendermint\"#g" /root/.local/share/namada/$CHAIN_ID/config.toml
 fi
 
 # start node

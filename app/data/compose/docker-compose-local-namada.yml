@@ -8,11 +8,11 @@ services:
     entrypoint: ["sh", "/docker-entrypoint-scripts.d/start-node.sh"]
     volumes:
       - ../config/local-namada/start-node.sh:/docker-entrypoint-scripts.d/start-node.sh
+      - ../config/local-namada/key-gen.exp:/scripts/key-gen.exp
       - namada-1_data:/root/.local/share/namada
       - namada-shared:/root/.namada-shared
-      - ${GENSESIS_TEMPLATE:-../config/local-namada/genesis_template.toml}:/genesis_template.toml
-      # - ../config/local-namada/genesis_template.old:/genesis_template.toml
-      - ../config/local-namada/make_genesis.py:/make_genesis.py
+      - ../config/local-namada/genesis:/genesis:ro
+      - ../config/local-namada/make_balances.py:/scripts/make_balances.py
     environment:
       # - CHAIN_ID=$CHAIN_ID
       - P2P_PORT=${P2P_PORT}
@@ -29,6 +29,7 @@ services:
     entrypoint: ["sh", "/docker-entrypoint-scripts.d/start-node.sh"]
     volumes:
       - ../config/local-namada/start-node.sh:/docker-entrypoint-scripts.d/start-node.sh
+      - ../config/local-namada/key-gen.exp:/scripts/key-gen.exp
       - namada-2_data:/root/.local/share/namada
       - namada-shared:/root/.namada-shared
     # environment:
@@ -44,13 +45,14 @@ services:
     entrypoint: ["sh", "/docker-entrypoint-scripts.d/start-node.sh"]
     volumes:
       - ../config/local-namada/start-node.sh:/docker-entrypoint-scripts.d/start-node.sh
+      - ../config/local-namada/key-gen.exp:/scripts/key-gen.exp
       - namada-3_data:/root/.local/share/namada
       - namada-shared:/root/.namada-shared
     # environment:
     #   - CHAIN_ID=$CHAIN_ID
     ports:
       - "26656" # p2p
-      - "26657" # http rpc
+      - "${RPC_PORT}:26657" # http rpc
 
 volumes:
   namada-1_data:

@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     pkg-config \
     protobuf-compiler \
+    libudev-dev \
     && apt-get clean
 
 COPY --from=planner /app/namada/recipe.json recipe.json
@@ -25,9 +26,9 @@ COPY --from=planner /app/namada/recipe.json recipe.json
 ARG BUILD_WASM=false
 ENV WASM=${BUILD_WASM}
 RUN if [ "$WASM" = "true" ]; then \
-    wget -P /root https://github.com/WebAssembly/binaryen/releases/download/version_114/binaryen-version_114-x86_64-linux.tar.gz && \
-    tar -xzf /root/binaryen-version_114-x86_64-linux.tar.gz -C /root && \
-    cp /root/binaryen-version_114/bin/* /usr/local/bin; \
+    wget -P /root https://github.com/WebAssembly/binaryen/releases/download/version_116/binaryen-version_116-x86_64-linux.tar.gz && \
+    tar -xzf /root/binaryen-version_116-x86_64-linux.tar.gz -C /root && \
+    cp /root/binaryen-version_116/bin/* /usr/local/bin; \
     fi
 
 RUN cargo chef cook --release --recipe-path recipe.json
