@@ -1,9 +1,0 @@
-[[established_account]]
-alias = "bertha"
-vp = "vp_user"
-
-[established_account.public_key]
-pk = "tpknam1qpyfnrl6qdqvguah9kknvp9t6ajcrec7fge56pcgaa655zkua3nds48x83t"
-authorization = "signam1qzt58nd7k2mj647x8x4ydhsjkut7dmsl7yjlnrnwu9kzjdch3cljv6dq05mx2kvwn80kjezh7lz26adc5ksvyn3knufymtkhlmnhg3c8rvmxvv"
-
-[established_account.storage]

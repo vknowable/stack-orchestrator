@@ -16,10 +16,11 @@ export ALIAS=$(hostname)
 
 if [ ! -f "/root/.namada-shared/chain.config" ]; then
   # generate validator keys
-  expect /scripts/key-gen.exp $ALIAS
+  WALLET_KEY="$ALIAS-wallet"
+  expect /scripts/key-gen.exp $WALLET_KEY
 
   namada client utils init-genesis-validator \
-    --source $ALIAS \
+    --source $WALLET_KEY \
     --alias $ALIAS \
     --net-address "${PUBLIC_IP}:26656" \
     --commission-rate 0.05 \
@@ -46,6 +47,30 @@ if [ $(hostname) = "namada-1" ]; then
 
     echo "Validator configs found. Generating chain configs..."
 
+    # create a pgf steward account with alias 'steward-1' and generate signed toml
+    STEWARD_ALIAS="steward-1"
+    expect /scripts/key-gen.exp $STEWARD_ALIAS
+    STEWARD_PK=$(namadaw key find --alias $STEWARD_ALIAS | awk -F ' ' 'NR == 2 {print $3}')
+    mkdir /root/.namada-shared/$STEWARD_ALIAS
+    cp /genesis/blank_account.toml /root/.namada-shared/$STEWARD_ALIAS/unsigned.toml
+    sed -i "s#ALIAS#$STEWARD_ALIAS#g" /root/.namada-shared/$STEWARD_ALIAS/unsigned.toml
+    sed -i "s#AMOUNT#1000000000#g" /root/.namada-shared/$STEWARD_ALIAS/unsigned.toml
+    sed -i "s#PUBLIC_KEY#$STEWARD_PK#g" /root/.namada-shared/$STEWARD_ALIAS/unsigned.toml
+    namadac utils sign-genesis-tx --path /root/.namada-shared/$STEWARD_ALIAS/unsigned.toml --output /root/.namada-shared/$STEWARD_ALIAS/transactions.toml
+    rm /root/.namada-shared/$STEWARD_ALIAS/unsigned.toml
+
+    # create a pgf steward account with alias 'steward-1' and generate signed toml
+    FAUCET_ALIAS="faucet-1"
+    expect /scripts/key-gen.exp $FAUCET_ALIAS
+    FAUCET_PK=$(namadaw key find --alias $FAUCET_ALIAS | awk -F ' ' 'NR == 2 {print $3}')
+    mkdir /root/.namada-shared/$FAUCET_ALIAS
+    cp /genesis/blank_account.toml /root/.namada-shared/$FAUCET_ALIAS/unsigned.toml
+    sed -i "s#ALIAS#$FAUCET_ALIAS#g" /root/.namada-shared/$FAUCET_ALIAS/unsigned.toml
+    sed -i "s#AMOUNT#9123372036854000000#g" /root/.namada-shared/$FAUCET_ALIAS/unsigned.toml
+    sed -i "s#PUBLIC_KEY#$FAUCET_PK#g" /root/.namada-shared/$FAUCET_ALIAS/unsigned.toml
+    namadac utils sign-genesis-tx --path /root/.namada-shared/$FAUCET_ALIAS/unsigned.toml --output /root/.namada-shared/$FAUCET_ALIAS/transactions.toml
+    rm /root/.namada-shared/$FAUCET_ALIAS/unsigned.toml
+
     # create directory for genesis toml files
     mkdir -p /root/.namada-shared/genesis
     cp /genesis/parameters.toml /root/.namada-shared/genesis/parameters.toml
@@ -53,13 +78,13 @@ if [ $(hostname) = "namada-1" ]; then
     cp /genesis/validity-predicates.toml /root/.namada-shared/genesis/validity-predicates.toml
     cp /genesis/transactions.toml /root/.namada-shared/genesis/transactions.toml
 
-    # add validator transactions to transactions.toml
+    # add genesis transactions to transactions.toml
+    # TODO: move to python script
     cat /root/.namada-shared/namada-1/transactions.toml >> /root/.namada-shared/genesis/transactions.toml
     cat /root/.namada-shared/namada-2/transactions.toml >> /root/.namada-shared/genesis/transactions.toml
     cat /root/.namada-shared/namada-3/transactions.toml >> /root/.namada-shared/genesis/transactions.toml
-
-    # add account alias 'bertha' (pgf-steward account)
-    cat /genesis/bertha.toml >> /root/.namada-shared/genesis/transactions.toml
+    cat /root/.namada-shared/$STEWARD_ALIAS/transactions.toml >> /root/.namada-shared/genesis/transactions.toml
+    cat /root/.namada-shared/$FAUCET_ALIAS/transactions.toml >> /root/.namada-shared/genesis/transactions.toml
 
     # python script to read validator/bertha pk's from their toml files, and add them to the balances.toml
     python3 /scripts/make_balances.py /root/.namada-shared /genesis/balances.toml > /root/.namada-shared/genesis/balances.toml
@@ -115,7 +140,7 @@ export NAMADA_NETWORK_CONFIGS_SERVER="http://${CONFIG_IP}:8123"
 curl $NAMADA_NETWORK_CONFIGS_SERVER
 rm -rf /root/.local/share/namada/$CHAIN_ID
 namada client utils join-network \
---chain-id $CHAIN_ID --genesis-validator $ALIAS --dont-prefetch-wasm
+  --chain-id $CHAIN_ID --genesis-validator $ALIAS --dont-prefetch-wasm
 
 # copy wasm to namada dir
 cp -a /wasm/*.wasm /root/.local/share/namada/$CHAIN_ID/wasm
