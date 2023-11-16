@@ -10,7 +10,7 @@ cleanup() {
 }
 
 
-export PUBLIC_IP=$(ip a | grep -oE 'inet ([0-9]{1,3}\.){3}[0-9]{1,3}/[0-9]{1,2} brd ([0-9]{1,3}\.){3}[0-9]{1,3}' | grep -v '127.0.0.1' | awk '{print $2}' | cut -d '/' -f1)
+export PUBLIC_IP=$(hostname)
 export ALIAS=$(hostname)
 
 if [ ! -f "/root/.namada-shared/chain.config" ]; then
