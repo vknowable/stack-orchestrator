@@ -9,6 +9,14 @@ services:
     volumes:
       - ../config/public-namada/start-node.sh:/docker-entrypoint-scripts.d/start-node.sh
       - namada_data:/root/.local/share/namada
+    # temporary workaround for 'stack overflow' error on restart 
+    ulimits:
+      stack:
+        soft: 655200000
+        hard: 655200000
+      nofile:
+        soft: 500000
+        hard: 500000
     environment:
       - CHAIN_ID=$CHAIN_ID
       - EXTIP=$EXTIP
