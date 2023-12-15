@@ -1,5 +1,7 @@
 #!/usr/bin/expect
 
+# this script was used to run the key gen command in interactive mode
+# it's no longer needed and can probably be deleted
 set ALIAS [lindex $argv 0]
 spawn namadaw key gen --pre-genesis --alias $ALIAS --unsafe-dont-encrypt
 expect "Enter BIP39 passphrase (empty for none):"

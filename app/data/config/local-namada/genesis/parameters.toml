@@ -68,10 +68,10 @@ cubic_slashing_window_length = 1
 validator_stake_threshold = "1"
 # The length, in blocks, of the sliding window for consensus validators
 # inactivity verification
-liveness_window_check = 100
-# The minimum required activity of consensus validators, in percentage, over 
+liveness_window_check = 1000
+# The minimum required activity of consensus validators, in percentage, over
 # the `liveness_window_check`
-liveness_threshold = "0.9"
+liveness_threshold = "0.1"
 
 # Governance parameters.
 [gov_params]
@@ -91,7 +91,7 @@ min_proposal_grace_epochs = 3
 # Public goods funding parameters
 [pgf_params]
 # Initial set of stewards
-stewards = ["steward-1"]
+stewards = ["STEWARD_ADDR"]
 # The pgf funding inflation rate
 pgf_inflation_rate = "0.1"
 # The pgf stewards inflation rate

@@ -53,6 +53,7 @@ services:
     ports:
       - "26656" # p2p
       - "${RPC_PORT}:26657" # http rpc
+      - "${PROM_PORT}:26660"
 
 volumes:
   namada-1_data:
