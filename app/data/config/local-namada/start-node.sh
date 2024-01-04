@@ -14,7 +14,7 @@ export ALIAS=$(hostname)
 
 if [ ! -f "/root/.namada-shared/chain.config" ]; then
   # generate key
-  namadaw --pre-genesis key gen --alias $ALIAS --unsafe-dont-encrypt
+  namadaw --pre-genesis gen --alias $ALIAS --unsafe-dont-encrypt
   # create established account
   est_output=$(namadac utils init-genesis-established-account --aliases $ALIAS --path /root/.local/share/namada/pre-genesis/unsigned-transactions.toml)
   echo $est_output
@@ -57,7 +57,7 @@ if [ $(hostname) = "namada-1" ]; then
 
     # create a pgf steward account with alias 'steward-1' and generate signed toml
     STEWARD_ALIAS="steward-1"
-    namadaw --pre-genesis key gen --alias $STEWARD_ALIAS --unsafe-dont-encrypt
+    namadaw --pre-genesis gen --alias $STEWARD_ALIAS --unsafe-dont-encrypt
     mkdir /root/.namada-shared/$STEWARD_ALIAS
     est_output=$(namadac utils init-genesis-established-account \
       --path "/root/.namada-shared/$STEWARD_ALIAS/unsigned-transactions.toml" \
@@ -71,7 +71,7 @@ if [ $(hostname) = "namada-1" ]; then
 
     # create a faucet account and signed-toml
     FAUCET_ALIAS="faucet-1"
-    namadaw --pre-genesis key gen --alias $FAUCET_ALIAS --unsafe-dont-encrypt
+    namadaw --pre-genesis gen --alias $FAUCET_ALIAS --unsafe-dont-encrypt
     mkdir -p /root/.namada-shared/$FAUCET_ALIAS
     est_output=$(namadac utils init-genesis-established-account \
       --path "/root/.namada-shared/$FAUCET_ALIAS/unsigned-transactions.toml" \
